@@ -11,9 +11,9 @@ int main()
 		system("pause");
 		return 1;
 	}
+	myClient.CreateGroup("ATM CIN"); //cererea clientului de a creeea un grup
 
-
-	std::string userinput; //holds the user's chat message
+	/*std::string userinput; //holds the user's chat message
 	while (true)
 	{
 		std::getline(std::cin, userinput); //Get line if user presses enter and fill the buffer
@@ -21,7 +21,7 @@ int main()
 			break; //If send string failed (if connection was closed), leave this loop since we have lost connection to the server
 		Sleep(10);
 	}
-
+	*/
 	system("pause");
 	return 0;
 }

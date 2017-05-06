@@ -19,7 +19,17 @@ public: //Public functions
 	bool Connect();
 
 	bool SendString(std::string & _string);
+	bool SendString(std::string & _string1, std::string&__string2);
 	bool CloseConnection();
+	
+ // de facut astea	
+	void CreateGroup(std::string groupName);
+	void LogIn();
+	//virtual void DeleteGroup(); //just for ClientOwner
+	void SingUp();
+
+
+
 private: //Private functions
 	bool ProcessPacket(Packet _packettype);
 	static void ClientThread();

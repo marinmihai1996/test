@@ -64,6 +64,20 @@ bool Server::ProcessPacket(int ID, Packet _packettype)
 		if (!GetString(ID, Message)) //Get the chat message and store it in variable: Message
 			return false; //If we do not properly get the chat message, return false
 						  //Next we need to send the message out to each user
+		std::string CreateGroupMessage = "creategroup";
+		if (Message.find(CreateGroupMessage)!= string::npos)
+		{
+			std::string groupName = Message.substr(11, std::string::npos);
+			if (!CreateGroup(ID,groupName)) {
+				std::cout << "Failed to create the group requested by client " << ID << std::endl;
+			}
+			else
+			{
+				std::cout << "Group "<<groupName<<" requested by the client " << ID <<" is created. This client is the owner"<< std::endl;
+				
+			}
+			break;
+		}
 		for (int i = 0; i < TotalConnections; i++)
 		{
 			if (i == ID) //If connection is the user who sent the message...
@@ -98,4 +112,10 @@ void Server::ClientHandlerThread(int ID) //ID = the index in the SOCKET Connecti
 	}
 	std::cout << "Lost connection to client ID: " << ID << std::endl;
 	closesocket(serverptr->Connections[ID]);
+}
+bool Server::CreateGroup(int ID,std::string nameGroup)
+{
+	Group* NewGroup = new Group(ID,nameGroup);
+	GroupList.push_back(NewGroup);
+	return true;
 }

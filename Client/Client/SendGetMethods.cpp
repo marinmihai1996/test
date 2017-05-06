@@ -44,7 +44,22 @@ bool Client::SendString(std::string & _string)
 		return false; //Return false: Failed to send string buffer
 	return true; //Return true: string successfully sent
 }
+bool Client::SendString(std::string & _string1, std::string &_string2)
+{
+	if (!SendPacketType(P_ChatMessage)) //Send packet type: Chat Message, If sending packet type fails...
+		return false; //Return false: Failed to send string
+	int bufferlength = _string1.size() + _string2.size()+1; //Find string buffer length
+	if (!SendInt(bufferlength)) //Send length of string buffer, If sending buffer length fails...
+		return false; //Return false: Failed to send string buffer length
+	std::string aux;
+	aux.append(_string1);
+	aux.append(_string2);
 
+	int RetnCheck = send(Connection,aux.c_str(), bufferlength, NULL); //Send string buffer
+	if (RetnCheck == SOCKET_ERROR) //If failed to send string buffer
+		return false; //Return false: Failed to send string buffer
+	return true; //Return true: string successfully sent
+}
 bool Client::GetString(std::string & _string)
 {
 	int bufferlength; //Holds length of the message

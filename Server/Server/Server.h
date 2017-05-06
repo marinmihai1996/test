@@ -5,7 +5,9 @@
 #include <WinSock2.h>
 #include <string>
 #include <iostream>
-
+#include<list>
+#include"Group.h"
+using namespace std;
 enum Packet
 {
 	P_ChatMessage,
@@ -17,6 +19,7 @@ class Server
 public:
 	Server(int PORT, bool BroadcastPublically = false);
 	bool ListenForNewConnection();
+	bool CreateGroup(int ID,std::string Name);
 
 private:
 	bool SendInt(int ID, int _int);
@@ -39,6 +42,7 @@ private:
 	SOCKADDR_IN addr; //Address that we will bind our listening socket to
 	int addrlen = sizeof(addr);
 	SOCKET sListen;
+	list <Group*> GroupList;
 };
 
 static Server * serverptr; //Serverptr is necessary so the static ClientHandler method can access the server instance/functions.

@@ -147,11 +147,15 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp" />
+    <ClCompile Include="ClientOwner.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="SendGetMethods.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h" />
+    <ClInclude Include="ClientAdmin.h" />
+    <ClInclude Include="ClientOwner.h" />
+    <ClInclude Include="ClientUsual.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
