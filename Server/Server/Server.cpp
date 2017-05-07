@@ -32,6 +32,7 @@ Server::Server(int PORT, bool BroadcastPublically) //Port = port to broadcast on
 		exit(1);
 	}
 	serverptr = this;
+	this->RestoreMemory();
 }
 
 bool Server::ListenForNewConnection()
@@ -47,11 +48,12 @@ bool Server::ListenForNewConnection()
 		std::cout << "Client Connected! ID:" << TotalConnections << std::endl;
 		Connections[TotalConnections] = newConnection; //Set socket in array to be the newest connection before creating the thread to handle this client's socket.
 		CreateThread(NULL, NULL, (LPTHREAD_START_ROUTINE)ClientHandlerThread, (LPVOID)(TotalConnections), NULL, NULL); //Create Thread to handle this client. The index in the socket array for this thread is the value (i).
-		std::string MOTD = "MOTD: Welcome! This is the message of the day!.";
-		SendString(TotalConnections, MOTD);
+		//std::string MOTD = "MOTD: Welcome! This is the message of the day!.";
+		//SendString(TotalConnections, MOTD);
 		TotalConnections += 1; //Incremenent total # of clients that have connected
 		return true;
 	}
+	
 }
 
 bool Server::ProcessPacket(int ID, Packet _packettype)
@@ -64,20 +66,19 @@ bool Server::ProcessPacket(int ID, Packet _packettype)
 		if (!GetString(ID, Message)) //Get the chat message and store it in variable: Message
 			return false; //If we do not properly get the chat message, return false
 						  //Next we need to send the message out to each user
+		
 		std::string CreateGroupMessage = "creategroup";
-		if (Message.find(CreateGroupMessage)!= string::npos)
-		{
-			std::string groupName = Message.substr(11, std::string::npos);
-			if (!CreateGroup(ID,groupName)) {
-				std::cout << "Failed to create the group requested by client " << ID << std::endl;
-			}
-			else
-			{
-				std::cout << "Group "<<groupName<<" requested by the client " << ID <<" is created. This client is the owner"<< std::endl;
-				
-			}
-			break;
+		std::string SingUp = "createAccount";
+		if (Message.find(CreateGroupMessage)!= string::npos){
+			CreateGroup(ID, Message);
 		}
+		if (Message.find(SingUp) != string::npos) {
+			CreateAccount(Message);
+		}
+
+
+
+		//broadcast message
 		for (int i = 0; i < TotalConnections; i++)
 		{
 			if (i == ID) //If connection is the user who sent the message...
@@ -113,9 +114,11 @@ void Server::ClientHandlerThread(int ID) //ID = the index in the SOCKET Connecti
 	std::cout << "Lost connection to client ID: " << ID << std::endl;
 	closesocket(serverptr->Connections[ID]);
 }
-bool Server::CreateGroup(int ID,std::string nameGroup)
+
+
+void Server::ViewAccountsList()
 {
-	Group* NewGroup = new Group(ID,nameGroup);
-	GroupList.push_back(NewGroup);
-	return true;
-}
+	std::cout << " The Accounts are: " << std::endl;
+	Memory& mem = Memory::GetInstance();
+	mem.ViewAccountsList();
+} 

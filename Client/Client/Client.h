@@ -21,12 +21,8 @@ public: //Public functions
 	bool SendString(std::string & _string);
 	bool SendString(std::string & _string1, std::string&__string2);
 	bool CloseConnection();
-	
- // de facut astea	
 	void CreateGroup(std::string groupName);
-	void LogIn();
-	//virtual void DeleteGroup(); //just for ClientOwner
-	void SingUp();
+	void ViewMenu();
 
 
 
@@ -42,6 +38,15 @@ private: //Private functions
 	bool GetInt(int & _int);
 	bool GetPacketType(Packet & _packettype);
 	bool GetString(std::string & _string);
+	
+
+	//LogIn and SingUp functions
+	// de facut astea	
+	
+	void LogIn();
+	//virtual void DeleteGroup(); //just for ClientOwner
+	void SingUp();
+
 
 private:
 	SOCKET Connection;//This client's connection to the server

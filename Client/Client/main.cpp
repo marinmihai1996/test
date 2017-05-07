@@ -8,10 +8,12 @@ int main()
 	if (!myClient.Connect()) //If client fails to connect...
 	{
 		std::cout << "Failed to connect to server..." << std::endl;
-		system("pause");
+		//system("pause");
 		return 1;
 	}
-	myClient.CreateGroup("ATM CIN"); //cererea clientului de a creeea un grup
+	myClient.ViewMenu();
+	
+	
 
 	/*std::string userinput; //holds the user's chat message
 	while (true)

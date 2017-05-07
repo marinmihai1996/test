@@ -1,5 +1,5 @@
 #include "Client.h"
-
+using namespace std;
 bool Client::ProcessPacket(Packet _packettype)
 {
 	switch (_packettype)
@@ -66,7 +66,8 @@ bool Client::Connect()
 		return false;
 	}
 
-	std::cout << "Connected!" << std::endl;
+	std::cout << "Connected to the server!" << std::endl;
+	std::cout << "Welcome to the M&M GroupChat!" << std::endl;
 	CreateThread(NULL, NULL, (LPTHREAD_START_ROUTINE)ClientThread, NULL, NULL, NULL); //Create the client thread that will receive any data that the server sends.
 	return true;
 }
@@ -88,9 +89,41 @@ void Client::CreateGroup(std::string groupName)
 {
 	std::string CreateGroupMessage = "creategroup";
 	std::string ErrorMessage = "Failed to create a group";
-	if (!this->SendString(CreateGroupMessage,groupName))
+	if (!this->SendString(CreateGroupMessage, groupName))
 		SendString(ErrorMessage);
-		
+
 	Sleep(10);
 
+}
+
+void Client::ViewMenu()
+{
+	std::cout << "MENU" << std::endl;
+	int option;
+	
+	std::cout << "1. SingUp" << std::endl;
+	std::cout << "2. LogIn" << std::endl;
+	std::cout << "3. Create a group" << std::endl;
+	/*std::cout << "1. LogIn" << std::endl;
+	std::cout << "1. LogIn" << std::endl;
+	std::cout << "1. LogIn" << std::endl;*/
+	std::cin >> option;
+	switch (option)
+	{
+	case 1:
+		SingUp();
+		break;
+	case 2:
+		LogIn();
+		break;
+	case 3:
+	{string name;
+	std::cout << "Choose the group name " << std::endl;
+	std::cin >> name;
+	CreateGroup(name);
+	break;
+	}
+	default:
+		break;
+	}
 }

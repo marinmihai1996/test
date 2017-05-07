@@ -1,5 +1,6 @@
 #pragma once
 #include<string>
+#include<iostream>
 using namespace std;
 class Group
 {
@@ -11,6 +12,7 @@ public:
 	string GetGroupName() { return this->GroupName; };
 	string SetGroupName();
 	int GetOwnerId() { return this->OwnerID; };
+	
 
 
 };

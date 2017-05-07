@@ -5,8 +5,10 @@
 #include <WinSock2.h>
 #include <string>
 #include <iostream>
-#include<list>
+#include<deque>
 #include"Group.h"
+#include"Account.h"
+#include"ServerMemory.h"
 using namespace std;
 enum Packet
 {
@@ -19,7 +21,12 @@ class Server
 public:
 	Server(int PORT, bool BroadcastPublically = false);
 	bool ListenForNewConnection();
-	bool CreateGroup(int ID,std::string Name);
+	void CreateGroup(int ID, std::string name);
+	void CreateAccount(std::string message);
+
+	void ViewAccountsList();
+	void SaveAccount(Account);
+	void RestoreMemory();
 
 private:
 	bool SendInt(int ID, int _int);
@@ -34,6 +41,7 @@ private:
 	bool ProcessPacket(int ID, Packet _packettype);
 
 	static void ClientHandlerThread(int ID);
+	
 
 private:
 	SOCKET Connections[100];
@@ -42,7 +50,7 @@ private:
 	SOCKADDR_IN addr; //Address that we will bind our listening socket to
 	int addrlen = sizeof(addr);
 	SOCKET sListen;
-	list <Group*> GroupList;
+	
 };
 
 static Server * serverptr; //Serverptr is necessary so the static ClientHandler method can access the server instance/functions.
