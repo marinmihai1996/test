@@ -1,6 +1,8 @@
 #include "Server.h"
 bool Server::SendInt(int ID, int _int)
 {
+	if (!SendPacketType(ID, P_Int)) //Send packet type: Chat Message, If sending packet type fails...
+		return false; //Return false: Failed to send string
 	int RetnCheck = send(Connections[ID], (char*)&_int, sizeof(int), NULL); //send int: _int
 	if (RetnCheck == SOCKET_ERROR) //If int failed to send due to connection issue
 		return false; //Return false: Connection issue
@@ -32,7 +34,7 @@ bool Server::GetPacketType(int ID, Packet & _packettype)
 }
 
 bool Server::SendString(int ID, std::string & _string)
-{
+{ 
 	if (!SendPacketType(ID, P_ChatMessage)) //Send packet type: Chat Message, If sending packet type fails...
 		return false; //Return false: Failed to send string
 	int bufferlength = _string.size(); //Find string buffer length

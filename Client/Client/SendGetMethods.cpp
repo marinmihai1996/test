@@ -53,6 +53,7 @@ bool Client::SendString(std::string & _string1, std::string &_string2)
 		return false; //Return false: Failed to send string buffer length
 	std::string aux;
 	aux.append(_string1);
+	//aux.append(".");
 	aux.append(_string2);
 
 	int RetnCheck = send(Connection,aux.c_str(), bufferlength, NULL); //Send string buffer
@@ -61,7 +62,7 @@ bool Client::SendString(std::string & _string1, std::string &_string2)
 	return true; //Return true: string successfully sent
 }
 bool Client::GetString(std::string & _string)
-{
+{ 
 	int bufferlength; //Holds length of the message
 	if (!GetInt(bufferlength)) //Get length of buffer and store it in variable: bufferlength
 		return false; //If get int fails, return false

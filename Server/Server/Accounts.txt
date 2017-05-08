@@ -1,2 +1,4 @@
-maria qaz
-ana ma
+maria qaz 0
+ana qa 1
+bla bla 1
+cori  0

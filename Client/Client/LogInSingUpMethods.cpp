@@ -18,7 +18,21 @@ string NotShowingPass(string &pass)
 
 void Client::LogIn()
 {
-
+	std::cout << "Username" << std::endl;
+	string usename;
+	cin >> usename;
+	std::cout << "Password" << std::endl;
+	string pass;
+	cin >> pass;
+	string aux = "login";
+	usename.append(".");
+	aux.append(".");
+	aux.append(usename);
+	pass.append(".");
+	pass.append(std::to_string(this->ID));
+	this->SendString(aux, pass);
+	system("pause");
+	this->ViewMenu1();
 }
 
 void Client::SingUp()
@@ -41,18 +55,18 @@ void Client::SingUp()
 			std::cout << "The passwod is not the same" << std::endl;
 			Sleep(2000);
 			system("cls");
-			this->ViewMenu();
+			this->ViewMenu1();
 		}
-		
 		ok = true;
 	}
-	
 	string aux="createAccount";
+	
 	aux.append(username);
 	aux.append(".");
+	pass.append(".");
+	pass.append(std::to_string(this->ID));
 	this->SendString(aux, pass);
-	std::cout << "Your account in created" << std::endl;
 	system("pause");
 	system("cls");
-	this->ViewMenu();
+	this->ViewMenu1();
 }

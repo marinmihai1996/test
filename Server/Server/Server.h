@@ -13,7 +13,7 @@ using namespace std;
 enum Packet
 {
 	P_ChatMessage,
-	P_Test
+	P_Int
 };
 
 class Server
@@ -23,10 +23,11 @@ public:
 	bool ListenForNewConnection();
 	void CreateGroup(int ID, std::string name);
 	void CreateAccount(std::string message);
-
+	void LogIn(std::string message);
 	void ViewAccountsList();
 	void SaveAccount(Account);
 	void RestoreMemory();
+	
 
 private:
 	bool SendInt(int ID, int _int);
@@ -45,7 +46,7 @@ private:
 
 private:
 	SOCKET Connections[100];
-	int TotalConnections = 0;
+	int IDs = 0;
 
 	SOCKADDR_IN addr; //Address that we will bind our listening socket to
 	int addrlen = sizeof(addr);

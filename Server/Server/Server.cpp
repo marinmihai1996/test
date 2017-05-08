@@ -45,12 +45,17 @@ bool Server::ListenForNewConnection()
 	}
 	else //If client connection properly accepted
 	{
-		std::cout << "Client Connected! ID:" << TotalConnections << std::endl;
-		Connections[TotalConnections] = newConnection; //Set socket in array to be the newest connection before creating the thread to handle this client's socket.
-		CreateThread(NULL, NULL, (LPTHREAD_START_ROUTINE)ClientHandlerThread, (LPVOID)(TotalConnections), NULL, NULL); //Create Thread to handle this client. The index in the socket array for this thread is the value (i).
-		//std::string MOTD = "MOTD: Welcome! This is the message of the day!.";
-		//SendString(TotalConnections, MOTD);
-		TotalConnections += 1; //Incremenent total # of clients that have connected
+		std::cout << "Client Connected! ID:" << IDs << std::endl;
+		
+
+		Connections[IDs] = newConnection; //Set socket in array to be the newest connection before creating the thread to handle this client's socket.
+		CreateThread(NULL, NULL, (LPTHREAD_START_ROUTINE)ClientHandlerThread, (LPVOID)(IDs), NULL, NULL); //Create Thread to handle this client. The index in the socket array for this thread is the value (i).
+		SendInt(IDs, IDs);
+																										  //std::string Connecting = "Client Connected!ID: ";
+	//	SendString(IDs, Connecting);
+	   // std::string MOTD = "MOTD: Welcome! This is the message of the day!.";
+		//SendString(0, MOTD);
+		IDs += 1; //Incremenent total # of clients that have connected
 		return true;
 	}
 	
@@ -69,17 +74,22 @@ bool Server::ProcessPacket(int ID, Packet _packettype)
 		
 		std::string CreateGroupMessage = "creategroup";
 		std::string SingUp = "createAccount";
+	    std:string LogIn = "login";
 		if (Message.find(CreateGroupMessage)!= string::npos){
 			CreateGroup(ID, Message);
 		}
 		if (Message.find(SingUp) != string::npos) {
 			CreateAccount(Message);
 		}
+		if (Message.find(LogIn) != string::npos)
+		{
+			this->LogIn(Message);
+		}
 
 
 
-		//broadcast message
-		for (int i = 0; i < TotalConnections; i++)
+		//broadcast message or private message
+		/*for (int i = 0; i < IDs ;i++)
 		{
 			if (i == ID) //If connection is the user who sent the message...
 				continue;//Skip to the next user since there is no purpose in sending the message back to the user who sent it.
@@ -87,7 +97,8 @@ bool Server::ProcessPacket(int ID, Packet _packettype)
 			{
 				std::cout << "Failed to send message from client ID: " << ID << " to client ID: " << i << std::endl;
 			}
-		}
+		}*/
+
 		std::cout << "Processed chat message packet from user ID: " << ID << std::endl;
 		break;
 	}
@@ -97,7 +108,7 @@ bool Server::ProcessPacket(int ID, Packet _packettype)
 		std::cout << "Unrecognized packet: " << _packettype << std::endl; //Display that packet was not found
 		break;
 	}
-	}
+	}  
 	return true;
 }
 

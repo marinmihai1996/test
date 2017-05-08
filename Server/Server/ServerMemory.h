@@ -4,7 +4,7 @@
 #include"Account.h"
 #include<deque>
 #include"LogAccounts.h"
-
+#include"Server.h"
 using namespace std;
 
 
@@ -25,6 +25,9 @@ public:
 	void AddInAccountList(Account*);
 	void RestoreAccountList();
 	void RestoreGroupsList();
-	bool VerifyExistanceAccount(string,string);
-
+	int VerifyExistanceAccount(string,string);
+	void GoOnline(int ID);
+	void GoOffine(int ID);
+	
+	
 };

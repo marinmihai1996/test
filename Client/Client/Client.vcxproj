@@ -150,6 +150,7 @@
     <ClCompile Include="ClientOwner.cpp" />
     <ClCompile Include="LogInSingUpMethods.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Menus.cpp" />
     <ClCompile Include="SendGetMethods.cpp" />
   </ItemGroup>
   <ItemGroup>

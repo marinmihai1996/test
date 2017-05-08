@@ -66,7 +66,8 @@ void Memory::RestoreAccountList() {
 			vector<string>tokens = split(line, ' ');
 			string username = tokens.at(0);
 			string password = tokens.at(1);
-			Account *newAccount = new Account(username, password);
+			int ID = std::stoi(tokens.at(2));
+			Account *newAccount = new Account(username, password,ID);
 			this->AddInAccountList(newAccount);
 		}
 		myfile.close();
@@ -77,21 +78,30 @@ void Memory::RestoreGroupsList() {
 };
 
 
-bool Memory::VerifyExistanceAccount(string usename, string pass)  // astea trebuie sa le trimit inapoi la client
+int Memory::VerifyExistanceAccount(string usename, string pass)  // astea trebuie sa le trimit inapoi la client
 {
 	for (int i = 0; i < AccountList.size(); i++)
 	{
-		if (AccountList[i]->GetUsername().compare(usename) != string::npos){
+		if (!AccountList[i]->GetUsername().compare(usename)){
 
-			if (AccountList[i]->GetPassword().compare(pass) != string::npos){
-				std::cout << "Account already existing! Please Log In!" << std::endl;
-				return false;
+			if (!AccountList[i]->GetPassword().compare(pass)) {
+				return 1; // deja exista
 			}
-			else {
-				std::cout << "This username is taken. Please choose another one!" << std::endl;
-				return false;
-			}
+			else return 2; // exista unul cu acelasi username
+		}
+		
+	}
+	return 0;
+}
+void Memory::GoOnline(int ID)
+{
+	for (int i = 0; i < AccountList.size(); i++)
+	{
+		if (AccountList[i]->GetId() == ID) {
+			AccountList[i]->GoOnline();
+			break;
 		}
 	}
-	return true;
 }
+
+

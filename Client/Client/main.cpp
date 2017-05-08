@@ -8,10 +8,10 @@ int main()
 	if (!myClient.Connect()) //If client fails to connect...
 	{
 		std::cout << "Failed to connect to server..." << std::endl;
-		//system("pause");
+		system("pause");
 		return 1;
 	}
-	myClient.ViewMenu();
+	myClient.ViewMenu1(); 
 	
 	
 
@@ -24,7 +24,7 @@ int main()
 		Sleep(10);
 	}
 	*/
-	system("pause");
+	//system("pause");
 	return 0;
 }
 

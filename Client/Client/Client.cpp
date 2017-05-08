@@ -1,5 +1,7 @@
 #include "Client.h"
 using namespace std;
+
+//unsigned int Client::NextID = 0;
 bool Client::ProcessPacket(Packet _packettype)
 {
 	switch (_packettype)
@@ -11,6 +13,42 @@ bool Client::ProcessPacket(Packet _packettype)
 			return false; //If we do not properly get the chat message, return false
 		std::cout << Message << std::endl; //Display the message to the user
 		break;
+	}
+	case P_Int:
+	{
+		int IntMessage;
+		if (!GetInt(IntMessage)) return false;
+		//std::cout << IntMessage << std::endl;
+		if (IntMessage < 1000) {
+			this->ID = IntMessage;
+			std::cout << "Connected to the server!" << std::endl;
+			std::cout << "Welcome to the M&M GroupChat!" << std::endl;
+			std::cout << "Your ID = " << IntMessage << endl;
+			//this->ViewMenu1();
+			break;
+		}
+		if (IntMessage == 1000) {
+			std::cout << "Your account is created!\n";
+			std::cout << "Log In\n";
+			LogIn();
+			break;
+		}
+		if (IntMessage == 1001) {
+			std::cout << "This account already exists. Please Login!\n";
+			break;
+		}
+		if (IntMessage == 1002) {
+			std::cout << "This username is taken.Please choose another one!\n";
+			break;
+		}
+		if (IntMessage == 1003) {
+			std::cout << "You are now online!\n";
+			break;
+		}
+		if (IntMessage == 1004) {
+			std::cout << "You don't have an account!Please Sing up!\n";
+			break;
+		   }
 	}
 	default: //If packet type is not accounted for
 		std::cout << "Unrecognized packet: " << _packettype << std::endl; //Display that packet was not found
@@ -42,6 +80,8 @@ void Client::ClientThread()
 
 Client::Client(std::string IP, int PORT)
 {
+	
+
 	//Winsock Startup
 	WSAData wsaData;
 	WORD DllVersion = MAKEWORD(2, 1);
@@ -65,10 +105,10 @@ bool Client::Connect()
 		MessageBoxA(NULL, "Failed to Connect", "Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
-
-	std::cout << "Connected to the server!" << std::endl;
-	std::cout << "Welcome to the M&M GroupChat!" << std::endl;
+	
 	CreateThread(NULL, NULL, (LPTHREAD_START_ROUTINE)ClientThread, NULL, NULL, NULL); //Create the client thread that will receive any data that the server sends.
+	
+
 	return true;
 }
 
@@ -94,36 +134,4 @@ void Client::CreateGroup(std::string groupName)
 
 	Sleep(10);
 
-}
-
-void Client::ViewMenu()
-{
-	std::cout << "MENU" << std::endl;
-	int option;
-	
-	std::cout << "1. SingUp" << std::endl;
-	std::cout << "2. LogIn" << std::endl;
-	std::cout << "3. Create a group" << std::endl;
-	/*std::cout << "1. LogIn" << std::endl;
-	std::cout << "1. LogIn" << std::endl;
-	std::cout << "1. LogIn" << std::endl;*/
-	std::cin >> option;
-	switch (option)
-	{
-	case 1:
-		SingUp();
-		break;
-	case 2:
-		LogIn();
-		break;
-	case 3:
-	{string name;
-	std::cout << "Choose the group name " << std::endl;
-	std::cin >> name;
-	CreateGroup(name);
-	break;
-	}
-	default:
-		break;
-	}
 }

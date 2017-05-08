@@ -15,12 +15,12 @@ static vector<string> split(const string &text, char sep) {
 	return tokens;
 }
 
+
 void Server::CreateGroup(int ID,std::string Message){
 	std::string groupName = Message.substr(11, std::string::npos);
 	Group* NewGroup = new Group(ID, groupName);
 	Memory& mem = Memory::GetInstance();
 	mem.AddInGroupList(NewGroup);
-	
 	
 }
 
@@ -30,14 +30,52 @@ void Server::CreateAccount(std::string message) {
 	vector<string> tokens = split(accountNameAndPass, '.'); // put the strings in a vector -> delimitator='.'
 	string username = tokens.at(0);
 	string password= tokens.at(1);
+	int ID = std::stoi(tokens.at(2)); 
 	Memory& mem = Memory::GetInstance();
-	if (mem.VerifyExistanceAccount(username, password) == true)
+	if (mem.VerifyExistanceAccount(username, password) == 0)
 	{
-		Account *newAccount = new Account(username, password);
+		Account *newAccount = new Account(username, password,ID);
 		mem.AddInAccountList(newAccount);
 		this->SaveAccount(*newAccount);
+		int AccountCreated = 1000;
+		SendInt(ID, AccountCreated);
+
+	}
+	else if (mem.VerifyExistanceAccount(username, password) == 1)
+	{
+		///string message = "This account already exists. Please Login!\n";
+		int Accountexists = 1001;
+		SendInt(ID, Accountexists);
+	}
+	else {
+		//string message = "This username is taken.Please choose another one!\n";
+		int SameUsername = 1002;
+		SendInt(ID, SameUsername);
 	}
 }
+void Server::LogIn(std::string message) {
+	std::string accountNameAndPass = message.substr(6, std::string::npos);
+	vector<string> tokens = split(accountNameAndPass, '.'); // put the strings in a vector -> delimitator='.'
+	string username = tokens.at(0);
+	string password = tokens.at(1);
+	int ID = std::stoi(tokens.at(2));
+	Memory& mem = Memory::GetInstance();
+	if (mem.VerifyExistanceAccount(username, password) == 1) {
+		// este in memorie
+		mem.GoOnline(ID);
+		int messageCode = 1003;
+		this->SendInt(ID, messageCode);
+	}
+	else {
+		//nu e in memorie
+		int messageCode = 1004;
+		this->SendInt(ID, messageCode);
+	}
+}
+
+
+
+
 
 
 void  Server::SaveAccount(Account a){
@@ -45,6 +83,8 @@ void  Server::SaveAccount(Account a){
 	MyLogClass.Write(a.GetUsername());
 	MyLogClass.Write(" ");
 	MyLogClass.Write(a.GetPassword());
+	MyLogClass.Write(" ");
+	MyLogClass.Write(std::to_string(a.GetId()));
 	MyLogClass.Write("\n");
 }
 

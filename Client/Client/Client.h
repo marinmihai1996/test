@@ -9,7 +9,7 @@
 enum Packet
 {
 	P_ChatMessage,
-	P_Test
+	P_Int
 };
 
 class Client
@@ -22,8 +22,10 @@ public: //Public functions
 	bool SendString(std::string & _string1, std::string&__string2);
 	bool CloseConnection();
 	void CreateGroup(std::string groupName);
-	void ViewMenu();
-
+	void ViewMenu1();
+	int ID;
+	static unsigned int NextID;
+	
 
 
 private: //Private functions
@@ -52,6 +54,7 @@ private:
 	SOCKET Connection;//This client's connection to the server
 	SOCKADDR_IN addr; //Address to be binded to our Connection socket
 	int sizeofaddr = sizeof(addr); //Need sizeofaddr for the connect function
+	
 };
 
 static Client * clientptr; //This client ptr is necessary so that the ClientThread method can access the Client instance/methods. Since the ClientThread method is static, this is the simplest workaround I could think of since there will only be one instance of the client.
