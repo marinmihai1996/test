@@ -1,0 +1,11 @@
+﻿  Actions.cpp
+d:\test-master (4)\test-master\server\server\actions.cpp(34): warning C4477: 'fprintf' : format string '%s' requires an argument of type 'char *', but variadic argument 1 has type 'std::string'
+  Generating Code...
+  Skipping... (no relevant changes detected)
+  main.cpp
+  ServerMemory.cpp
+  Server.cpp
+  SendGetMethods.cpp
+  LogAccounts.cpp
+  Server.vcxproj -> D:\test-master (4)\test-master\Client\x64\Debug\Server.exe
+  Server.vcxproj -> D:\test-master (4)\test-master\Client\x64\Debug\Server.pdb (Full PDB)
