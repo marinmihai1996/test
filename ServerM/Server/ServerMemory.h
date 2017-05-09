@@ -19,16 +19,27 @@ private:
 
 public:
 	static Memory& GetInstance();
+	
+	
 	void ViewGroupsList();
 	void ViewAccountsList();
+	
+	
 	void AddInGroupList(Group*);
 	void AddInAccountList(Account*);
+
+	//restore functions
 	void RestoreAccountList();
-	void RestoreGroupsList();
+	void RestoreGroupsList();  // nu e implementata
+	
 	Account* getAccount(int ID);
+	int GetId(std::string name);
+	
 	int VerifyExistanceAccount(string,string);
-	void GoOnline(int ID);
-	void GoOffine(int ID);
 	int VerifyID(int id); // can't have 2 accounts with same iD
+
+	
+	void GoOnline(int ID);
+	void GoOffine(int ID); // nu e implementata inca
 	
 };

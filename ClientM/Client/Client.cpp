@@ -43,6 +43,7 @@ bool Client::ProcessPacket(Packet _packettype)
 		}
 		if (IntMessage == 1003) {
 			std::cout << "You are now online!\n";
+			this->OkSingUp = true;
 			break;
 		}
 		if (IntMessage == 1004) {

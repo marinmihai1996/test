@@ -95,7 +95,14 @@ int Memory::VerifyID(int id)
 			return AccountList.size();
 	}
 }
-
+int Memory::GetId(std::string name)
+{
+	for (int i = 0; i < AccountList.size(); i++)
+	{
+		if (AccountList[i]->GetUsername().compare(name))
+			return AccountList[i]->GetId();
+	}
+}
 
 int Memory::VerifyExistanceAccount(string usename, string pass)  
 {

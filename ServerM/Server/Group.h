@@ -17,6 +17,8 @@ public:
 	string SetGroupName();
 	int GetOwnerId() { return this->OwnerID; };
 	void addAccount(Account* a) { MemberList.push_back(a); };
+	void SeeMembers();
+
 
 
 };
