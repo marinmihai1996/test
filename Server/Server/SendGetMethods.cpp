@@ -15,6 +15,7 @@ bool Server::GetInt(int ID, int & _int)
 	if (RetnCheck == SOCKET_ERROR) //If there is a connection issue
 		return false; //return false since we did not get the integer
 	return true;//Return true if we were successful in retrieving the int
+
 }
 
 bool Server::SendPacketType(int ID, Packet _packettype)

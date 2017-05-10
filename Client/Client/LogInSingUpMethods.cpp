@@ -23,7 +23,7 @@ void Client::LogIn()
 	cin >> usename;
 	std::cout << "Password" << std::endl;
 	string pass;
-	cin >> pass;
+	NotShowingPass(pass);
 	string aux = "login";
 	usename.append(".");
 	aux.append(".");
@@ -31,8 +31,20 @@ void Client::LogIn()
 	pass.append(".");
 	pass.append(std::to_string(this->ID));
 	this->SendString(aux, pass);
-	system("pause");
-	this->ViewMenu1();
+	Sleep(2000);
+	system("cls");
+
+	fflush(NULL);
+	if (this->OkSingUp == true)
+	{
+		this->ViewMenu2();
+		std::cout << "\n\n Menu2 \n" << endl;
+
+	}
+	else this->ViewMenu1();
+	//system("pause");
+	
+	//this->ViewMenu1();
 }
 
 void Client::SingUp()
@@ -55,6 +67,7 @@ void Client::SingUp()
 			std::cout << "The passwod is not the same" << std::endl;
 			Sleep(2000);
 			system("cls");
+			fflush(NULL);
 			this->ViewMenu1();
 		}
 		ok = true;
@@ -68,5 +81,7 @@ void Client::SingUp()
 	this->SendString(aux, pass);
 	system("pause");
 	system("cls");
+	fflush(NULL);
+	this->OkSingUp = true;
 	this->ViewMenu1();
 }

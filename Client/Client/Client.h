@@ -23,8 +23,11 @@ public: //Public functions
 	bool CloseConnection();
 	void CreateGroup(std::string groupName);
 	void ViewMenu1();
+	void ViewMenu2();
+	void ViewMenu3(std::string &);
 	int ID;
-	static unsigned int NextID;
+	void ConnecttoGroup(std::string groupName);
+	//static unsigned int NextID;
 	
 
 
@@ -41,9 +44,6 @@ private: //Private functions
 	bool GetPacketType(Packet & _packettype);
 	bool GetString(std::string & _string);
 	
-
-	//LogIn and SingUp functions
-	// de facut astea	
 	
 	void LogIn();
 	//virtual void DeleteGroup(); //just for ClientOwner
@@ -54,7 +54,7 @@ private:
 	SOCKET Connection;//This client's connection to the server
 	SOCKADDR_IN addr; //Address to be binded to our Connection socket
 	int sizeofaddr = sizeof(addr); //Need sizeofaddr for the connect function
-	
+	bool OkSingUp = false;
 };
 
 static Client * clientptr; //This client ptr is necessary so that the ClientThread method can access the Client instance/methods. Since the ClientThread method is static, this is the simplest workaround I could think of since there will only be one instance of the client.

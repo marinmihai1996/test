@@ -148,6 +148,7 @@
   <ItemGroup>
     <ClCompile Include="Client.cpp" />
     <ClCompile Include="ClientOwner.cpp" />
+    <ClCompile Include="GroupMethods.cpp" />
     <ClCompile Include="LogInSingUpMethods.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Menus.cpp" />

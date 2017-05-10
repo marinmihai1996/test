@@ -43,6 +43,7 @@ bool Client::ProcessPacket(Packet _packettype)
 		}
 		if (IntMessage == 1003) {
 			std::cout << "You are now online!\n";
+			this->OkSingUp = true;
 			break;
 		}
 		if (IntMessage == 1004) {
@@ -125,13 +126,4 @@ bool Client::CloseConnection()
 	}
 	return true;
 }
-void Client::CreateGroup(std::string groupName)
-{
-	std::string CreateGroupMessage = "creategroup";
-	std::string ErrorMessage = "Failed to create a group";
-	if (!this->SendString(CreateGroupMessage, groupName))
-		SendString(ErrorMessage);
 
-	Sleep(10);
-
-}

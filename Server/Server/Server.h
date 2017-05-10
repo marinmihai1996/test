@@ -10,6 +10,7 @@
 #include"Account.h"
 #include"ServerMemory.h"
 using namespace std;
+
 enum Packet
 {
 	P_ChatMessage,
@@ -22,13 +23,15 @@ public:
 	Server(int PORT, bool BroadcastPublically = false);
 	bool ListenForNewConnection();
 	void CreateGroup(int ID, std::string name);
-	void CreateAccount(std::string message);
+	void SingUp(std::string message);
 	void LogIn(std::string message);
 	void ViewAccountsList();
 	void SaveAccount(Account);
 	void RestoreMemory();
 	Account* getAccount(int ID);
-
+	int GetIdClient(std::string name);
+	void InviteClient(std::string);
+	void ConnecttoGroup(int ID, std::string name);
 private:
 	bool SendInt(int ID, int _int);
 	bool GetInt(int ID, int & _int);

@@ -73,19 +73,21 @@ bool Server::ProcessPacket(int ID, Packet _packettype)
 						  //Next we need to send the message out to each user
 		
 		std::string CreateGroupMessage = "creategroup";
-		std::string SingUp = "createAccount";
-	    std:string LogIn = "login";
+		std::string singUp = "createAccount";
+    	std:string LogIn = "login";
+		std::string Invitation = "inviteclient";
 		if (Message.find(CreateGroupMessage)!= string::npos){
 			CreateGroup(ID, Message);
 		}
-		if (Message.find(SingUp) != string::npos) {
-			CreateAccount(Message);
+		if (Message.find(singUp) != string::npos) {
+			SingUp(Message);
 		}
-		if (Message.find(LogIn) != string::npos)
-		{
+		if (Message.find(LogIn) != string::npos){
 			this->LogIn(Message);
 		}
-
+		if (Message.find(Invitation) != string::npos) {
+			this->InviteClient(Message);
+		}
 
 
 		//broadcast message or private message
@@ -119,7 +121,7 @@ void Server::ClientHandlerThread(int ID) //ID = the index in the SOCKET Connecti
 	{
 		if (!serverptr->GetPacketType(ID, PacketType)) //Get packet type
 			break; //If there is an issue getting the packet type, exit this loop
-		if (!serverptr->ProcessPacket(ID, PacketType)) //Process packet (packet type)
+if (!serverptr->ProcessPacket(ID, PacketType)) //Process packet (packet type)
 			break; //If there is an issue processing the packet, exit this loop
 	}
 	std::cout << "Lost connection to client ID: " << ID << std::endl;

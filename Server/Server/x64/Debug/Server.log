@@ -1,11 +1,20 @@
-﻿  Actions.cpp
-d:\test-master (4)\test-master\server\server\actions.cpp(34): warning C4477: 'fprintf' : format string '%s' requires an argument of type 'char *', but variadic argument 1 has type 'std::string'
-  Generating Code...
-  Skipping... (no relevant changes detected)
-  main.cpp
-  ServerMemory.cpp
+﻿  ServerMemory.cpp
+c:\users\marin\downloads\test-master (5)\test-master\serverm\server\servermemory.cpp(95): warning C4267: 'return': conversion from 'size_t' to 'int', possible loss of data
   Server.cpp
+c:\users\marin\downloads\test-master (5)\test-master\serverm\server\server.cpp(52): warning C4312: 'type cast': conversion from 'int' to 'LPVOID' of greater size
+c:\users\marin\downloads\test-master (5)\test-master\serverm\server\server.cpp(77): warning C4102: 'std': unreferenced label
   SendGetMethods.cpp
+c:\users\marin\downloads\test-master (5)\test-master\serverm\server\sendgetmethods.cpp(41): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+  main.cpp
   LogAccounts.cpp
-  Server.vcxproj -> D:\test-master (4)\test-master\Client\x64\Debug\Server.exe
-  Server.vcxproj -> D:\test-master (4)\test-master\Client\x64\Debug\Server.pdb (Full PDB)
+c:\users\marin\downloads\test-master (5)\test-master\serverm\server\logaccounts.cpp(1): warning C4005: '_CRT_SECURE_NO_WARNINGS': macro redefinition
+  c:\users\marin\downloads\test-master (5)\test-master\serverm\server\logaccounts.cpp(1): note: command-line arguments:  see previous definition of '_CRT_SECURE_NO_WARNINGS'
+  Group.cpp
+  Actions.cpp
+  Account.cpp
+  Generating Code...
+c:\users\marin\downloads\test-master (5)\test-master\serverm\server\servermemory.cpp(97): warning C4715: 'Memory::VerifyID': not all control paths return a value
+c:\users\marin\downloads\test-master (5)\test-master\serverm\server\servermemory.cpp(105): warning C4715: 'Memory::GetId': not all control paths return a value
+c:\users\marin\downloads\test-master (5)\test-master\serverm\server\servermemory.cpp(138): warning C4715: 'Memory::getID': not all control paths return a value
+  Server.vcxproj -> C:\Users\Marin\Downloads\test-master (5)\test-master\ServerM\x64\Debug\Server.exe
+  Server.vcxproj -> C:\Users\Marin\Downloads\test-master (5)\test-master\ServerM\x64\Debug\Server.pdb (Full PDB)
