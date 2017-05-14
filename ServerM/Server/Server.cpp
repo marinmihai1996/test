@@ -33,10 +33,12 @@ Server::Server(int PORT, bool BroadcastPublically) //Port = port to broadcast on
 	}
 	serverptr = this;
 	this->RestoreMemory();
+	Memory &mem = Memory::GetInstance();
+	//this->IDs = mem.RestoreIdNumber();
 }
 
 bool Server::ListenForNewConnection()
-{
+  {
 	SOCKET newConnection = accept(sListen, (SOCKADDR*)&addr, &addrlen); //Accept a new connection
 	if (newConnection == 0) //If accepting the client connection failed
 	{
@@ -45,21 +47,21 @@ bool Server::ListenForNewConnection()
 	}
 	else //If client connection properly accepted
 	{
-		std::cout << "Client Connected! ID:" << IDs << std::endl;
-		
+		std::cout << "Client Connected!";
 
 		Connections[IDs] = newConnection; //Set socket in array to be the newest connection before creating the thread to handle this client's socket.
 		CreateThread(NULL, NULL, (LPTHREAD_START_ROUTINE)ClientHandlerThread, (LPVOID)(IDs), NULL, NULL); //Create Thread to handle this client. The index in the socket array for this thread is the value (i).
-		SendInt(IDs, IDs);
-																										  //std::string Connecting = "Client Connected!ID: ";
-	//	SendString(IDs, Connecting);
-	   // std::string MOTD = "MOTD: Welcome! This is the message of the day!.";
-		//SendString(0, MOTD);
+		std::string aux = "Connected";
+		std::string Id = "ID.";
+		Id.append(std::to_string(IDs));
+		SendString(IDs, Id);
+		SendString(IDs, aux);
 		IDs += 1; //Incremenent total # of clients that have connected
 		return true;
 	}
-	
+
 }
+
 
 bool Server::ProcessPacket(int ID, Packet _packettype)
 {
@@ -76,6 +78,7 @@ bool Server::ProcessPacket(int ID, Packet _packettype)
 		std::string singUp = "createAccount";
     	std:string LogIn = "login";
 		std::string Invitation = "inviteclient";
+		std::string ChatGroup = "chatg";
 		if (Message.find(CreateGroupMessage)!= string::npos){
 			CreateGroup(ID, Message);
 		}
@@ -88,7 +91,9 @@ bool Server::ProcessPacket(int ID, Packet _packettype)
 		if (Message.find(Invitation) != string::npos) {
 			this->InviteClient(Message);
 		}
-
+		if (Message.find(ChatGroup) != string::npos) {
+			this->GroupChat(Message);
+		}
 
 		//broadcast message or private message
 		/*for (int i = 0; i < IDs ;i++)
@@ -101,7 +106,7 @@ bool Server::ProcessPacket(int ID, Packet _packettype)
 			}
 		}*/
 
-		std::cout << "Processed chat message packet from user ID: " << ID << std::endl;
+		std::cout << "Processed chat message packet from user  " << ID << std::endl;
 		break;
 	}
 

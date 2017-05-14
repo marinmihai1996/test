@@ -36,6 +36,8 @@ void Server::CreateGroup(int ID,std::string Message){
 	NewGroup->addAccount(getAccount(ID));
 	groupName.append(".txt");
    // FILE *f = fopen(groupName.c_str(),"a+");
+
+
 	vector<string> tokens = split(groupName, '.');
 	string name = tokens.at(0);
 	ofstream OutPut;
@@ -65,43 +67,58 @@ void Server::SingUp(std::string message) {
 
 	if (mem.VerifyExistanceAccount(username, password) == 0)
 	{
-		ID = mem.VerifyID(ID);
+		//ID = mem.VerifyID(ID);
 		Account *newAccount = new Account(username, password,ID);
 		mem.AddInAccountList(newAccount);
 		this->SaveAccount(*newAccount);
-		int AccountCreated = 1000;
-		SendInt(ID, AccountCreated);
-
+		string IdMessage = "ID.";
+		IdMessage.append(std::to_string(ID));
+		SendString(ID, IdMessage);
+		string ToSend = "Your account is created!\n";
+		SendString(ID, ToSend);
+		
 	}
 	else if (mem.VerifyExistanceAccount(username, password) == 1)
 	{
-		///string message = "This account already exists. Please Login!\n";
-		int Accountexists = 1001;
-		SendInt(ID, Accountexists);
+		//ID = mem.VerifyID(ID);
+		string IdMessage = "ID.";
+		IdMessage.append(std::to_string(ID));
+		SendString(ID, IdMessage);
+		string message = "This account already exists. Please Login!\n";
+		SendString(ID,message);
 	}
 	else {
-		//string message = "This username is taken.Please choose another one!\n";
-		int SameUsername = 1002;
-		SendInt(ID, SameUsername);
+		//ID = mem.VerifyID(ID);
+		string IdMessage = "ID.";
+		IdMessage.append(std::to_string(ID));
+		SendString(ID, IdMessage);
+		string message = "This username is taken.Please choose another one!\n";
+		SendString(ID, message);
 	}
 }
 void Server::LogIn(std::string message) {
+	
 	std::string accountNameAndPass = message.substr(6, std::string::npos);
 	vector<string> tokens = split(accountNameAndPass, '.'); // put the strings in a vector -> delimitator='.'
 	string username = tokens.at(0);
 	string password = tokens.at(1);
-	int ID = std::stoi(tokens.at(2));
+	int ID = stoi(tokens.at(2));
+	
 	Memory& mem = Memory::GetInstance();
 	if (mem.VerifyExistanceAccount(username, password) == 1) {
 		// este in memorie
+		string IdMessage = "ID.";
+
+		IdMessage.append(std::to_string(ID));
+		SendString(ID, IdMessage);
+		string message= "You are now online!\n";
 		mem.GoOnline(ID);
-		int messageCode = 1003;
-		this->SendInt(ID, messageCode);
+		this->SendString(ID, message);
 	}
 	else {
 		//nu e in memorie
-		int messageCode = 1004;
-		this->SendInt(ID, messageCode);
+		string message = "You don't have an account!Please Sing up!\n";
+		this->SendString(ID, message);
 	}
 }
 
@@ -142,7 +159,26 @@ void Server::InviteClient(string message)
 		}
 	}
 	  
+}
 
+
+
+void Server::GroupChat(std::string Message)
+{
+	std::string MessageAndID = Message.substr(6, std::string::npos);
+	vector<string> tokens = split(MessageAndID,'.'); // put the strings in a vector -> delimitator='.'
+	int ID = std::stoi(tokens.at(0));
+	string message = tokens.at(1);
+
+	for (int i = 0; i < IDs; i++)
+	{
+		if (i == ID) //If connection is the user who sent the message...
+			continue;//Skip to the next user since there is no purpose in sending the message back to the user who sent it.
+		if (!SendString(i, message)) //Send message to connection at index i, if message fails to be sent...
+		{
+			std::cout << "Failed to send message from client ID: " << ID << " to client ID: " << i << std::endl;
+		}
+	}
 }
 
 #endif

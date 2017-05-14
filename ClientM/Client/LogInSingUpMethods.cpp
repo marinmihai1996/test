@@ -77,7 +77,7 @@ void Client::SingUp()
 	aux.append(username);
 	aux.append(".");
 	pass.append(".");
-	pass.append(std::to_string(this->ID));
+    pass.append(std::to_string(this->ID)); 
 	this->SendString(aux, pass);
 	system("pause");
 	system("cls");

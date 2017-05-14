@@ -29,6 +29,7 @@ public:
 	void AddInAccountList(Account*);
 
 	//restore functions
+	int RestoreIdNumber();
 	void RestoreAccountList();
 	void RestoreGroupsList();  // nu e implementata
 	

@@ -8,8 +8,8 @@
 
 enum Packet
 {
-	P_ChatMessage,
-	P_Int
+	P_ChatMessage
+
 };
 
 class Client
@@ -35,16 +35,18 @@ private: //Private functions
 	bool ProcessPacket(Packet _packettype);
 	static void ClientThread();
 	//Sending Funcs
+	bool sendall(char * data, int totalbytes);
 	bool SendInt(int _int);
 	bool SendPacketType(Packet _packettype);
 
 
 	//Getting Funcs
+	bool recvall(char * data, int totalbytes);
 	bool GetInt(int & _int);
 	bool GetPacketType(Packet & _packettype);
 	bool GetString(std::string & _string);
 	
-	
+	void ChatGroup(std::string);
 	void LogIn();
 	//virtual void DeleteGroup(); //just for ClientOwner
 	void SingUp();

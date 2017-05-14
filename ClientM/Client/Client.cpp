@@ -1,5 +1,17 @@
 #include "Client.h"
 using namespace std;
+#include<vector>
+static vector<string> split(const string &text, char sep) {
+	vector<string> tokens;
+	size_t start = 0, end = 0;
+	while ((end = text.find(sep, start)) != string::npos) {
+		tokens.push_back(text.substr(start, end - start));
+		start = end + 1;
+	}
+	tokens.push_back(text.substr(start));
+	return tokens;
+}
+
 
 //unsigned int Client::NextID = 0;
 bool Client::ProcessPacket(Packet _packettype)
@@ -11,45 +23,25 @@ bool Client::ProcessPacket(Packet _packettype)
 		std::string Message; //string to store our message we received
 		if (!GetString(Message)) //Get the chat message and store it in variable: Message
 			return false; //If we do not properly get the chat message, return false
+		if (Message.find("Connected")!=string::npos){
+			std::cout << "Welcome to the M&M GroupChat!" << std::endl;
+			//std::cout << "Your ID = " << this->ID << endl;
+			break;
+		}
+		if (Message.find("ID") != string::npos){
+			vector<string> tokens = split(Message, '.');
+			this->ID = stoi(tokens.at(1));
+			//std::cout << "Your Id is " << this->ID << endl;
+			break;
+		}
+		if (Message.find("You are now online") != string::npos){
+			this->OkSingUp = true;
+			std::cout << Message << std::endl;
+			break;
+		}
+
 		std::cout << Message << std::endl; //Display the message to the user
 		break;
-	}
-	case P_Int:
-	{
-		int IntMessage;
-		if (!GetInt(IntMessage)) return false;
-		//std::cout << IntMessage << std::endl;
-		if (IntMessage < 1000) {
-			this->ID = IntMessage;
-			std::cout << "Connected to the server!" << std::endl;
-			std::cout << "Welcome to the M&M GroupChat!" << std::endl;
-			std::cout << "Your ID = " << IntMessage << endl;
-			//this->ViewMenu1();
-			break;
-		}
-		if (IntMessage == 1000) {
-			std::cout << "Your account is created!\n";
-			std::cout << "Log In\n";
-			LogIn();
-			break;
-		}
-		if (IntMessage == 1001) {
-			std::cout << "This account already exists. Please Login!\n";
-			break;
-		}
-		if (IntMessage == 1002) {
-			std::cout << "This username is taken.Please choose another one!\n";
-			break;
-		}
-		if (IntMessage == 1003) {
-			std::cout << "You are now online!\n";
-			this->OkSingUp = true;
-			break;
-		}
-		if (IntMessage == 1004) {
-			std::cout << "You don't have an account!Please Sing up!\n";
-			break;
-		   }
 	}
 	default: //If packet type is not accounted for
 		std::cout << "Unrecognized packet: " << _packettype << std::endl; //Display that packet was not found
@@ -92,11 +84,12 @@ Client::Client(std::string IP, int PORT)
 		exit(0);
 	}
 
-	addr.sin_addr.s_addr = inet_addr(IP.c_str()); //Address 127.0.0.1 = localhost (This pc)
-	addr.sin_port = htons(PORT); //Port to connect on
+	addr.sin_addr.s_addr = inet_addr(IP.c_str()); //Address (127.0.0.1) = localhost (this pc)
+	addr.sin_port = htons(PORT); //Port 
 	addr.sin_family = AF_INET; //IPv4 Socket
 	clientptr = this; //Update ptr to the client which will be used by our client thread
 }
+
 
 bool Client::Connect()
 {
@@ -106,10 +99,9 @@ bool Client::Connect()
 		MessageBoxA(NULL, "Failed to Connect", "Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
-	
-	CreateThread(NULL, NULL, (LPTHREAD_START_ROUTINE)ClientThread, NULL, NULL, NULL); //Create the client thread that will receive any data that the server sends.
-	
 
+	std::cout << "Connected!" << std::endl;
+	CreateThread(NULL, NULL, (LPTHREAD_START_ROUTINE)ClientThread, NULL, NULL, NULL); //Create the client thread that will receive any data that the server sends.
 	return true;
 }
 

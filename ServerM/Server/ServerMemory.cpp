@@ -82,6 +82,19 @@ void Memory::RestoreAccountList() {
 	}
 	else cout << "Unable to open file";
 };
+
+int Memory::RestoreIdNumber()
+{
+	int nr = 0;
+	string line;
+	ifstream myfile("Accounts.txt");
+	if (myfile.good()) {
+		while (getline(myfile, line)) {  // same as: while (getline( myfile, line ).good())
+			nr++;
+		}
+	}
+	return nr;
+}
 void Memory::RestoreGroupsList() {
 	//asta trebuie facuta
 

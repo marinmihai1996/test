@@ -38,8 +38,6 @@ void Client::ViewMenu1()
 }
 
 
-
-
 void Client::ViewMenu2() {
 
 
@@ -70,6 +68,8 @@ void Client::ViewMenu3(string &groupName) {
 	fflush(NULL);
 	std::cout << "1.Send a invitation to a client\n" << std::endl;
 	std::cout << "2.Quick add a client\n" << std::endl;
+	std::cout << "3. Go to chat\n" << std::endl;
+	std::cout << " 4. Go back\n" << std::endl;
 	std::cin >> option;
 	switch (option) {
 	case 1:
@@ -85,6 +85,12 @@ void Client::ViewMenu3(string &groupName) {
 		break; }
 	case 2:
 		break;
+	case 3:
+		this->ChatGroup(groupName);
+	case 4:
+	{
+		system("cls");
+		this->ViewMenu2(); }
 	default:
 		break;
 	}
