@@ -27,7 +27,7 @@ public: //Public functions
 	void ViewMenu3(std::string &);
 	int ID;
 	
-	//static unsigned int NextID;
+	//static unsigned int NextID; 
 	
 
 

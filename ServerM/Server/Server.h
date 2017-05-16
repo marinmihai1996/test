@@ -25,7 +25,8 @@ public:
 	void SingUp(std::string message);
 	void LogIn(std::string message);
 	void ViewAccountsList();
-	void SaveAccount(Account);
+	void SaveAccount(Account*);
+	void RewriteAccountFile();
 	void RestoreMemory();
 	
 	

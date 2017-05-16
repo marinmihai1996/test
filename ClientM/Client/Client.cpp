@@ -39,6 +39,20 @@ bool Client::ProcessPacket(Packet _packettype)
 			std::cout << Message << std::endl;
 			break;
 		}
+		if (Message.find("group") != string::npos) {
+			vector<string> tokens = split(Message, '.');
+			string groupName = tokens.at(1);
+			system("cls");
+			this->ViewMenu3(groupName);
+		}
+		if (Message.find("This name is taken.Choose another one") != string::npos) {
+			system("cls");
+ 			std::cout << Message << std::endl;
+			
+ 			//system("pause");
+			this->ViewMenu2();
+			break;
+		}
 
 		std::cout << Message << std::endl; //Display the message to the user
 		break;

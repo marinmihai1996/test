@@ -16,8 +16,7 @@ public:
 	static LogClass& GetInstance(); 
 	void Write(string);
 	void write(char a) { fprintf(mpFILE,"%c",a); };
-	//void Write(int);
-	//static void OpenLogFile();
+	
 
 };
 #endif

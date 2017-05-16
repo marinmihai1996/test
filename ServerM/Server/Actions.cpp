@@ -4,6 +4,7 @@
 #include"Server.h"
 #include"Account.h"
 #include"LogAccounts.h"
+#include"LogGroups.h"
 #include<fstream>
 using namespace std;
 ofstream write;
@@ -31,31 +32,44 @@ int Server::GetIdClient(std::string name)
 
 void Server::CreateGroup(int ID,std::string Message){ 
 	std::string groupName = Message.substr(11, std::string::npos);
-	Group* NewGroup = new Group(ID, groupName);
-	Memory& mem = Memory::GetInstance();
-	NewGroup->addAccount(getAccount(ID));
-	groupName.append(".txt");
-   // FILE *f = fopen(groupName.c_str(),"a+");
+	Memory&mem = Memory::GetInstance();
+	string ownerName = mem.getAccount(ID)->GetUsername();
+	if (mem.ExistsGroup(groupName) == false)
+	{
+		Group* NewGroup = new Group(groupName, ownerName);
+		LogGroups&groups = LogGroups::GetInstance();
+		string auxx;
+		auxx.append(groupName);
+		auxx.append(" ");
+		auxx.append(ownerName);
+		auxx.append("\n");
+		groups.Write(auxx);
 
-
-	vector<string> tokens = split(groupName, '.');
-	string name = tokens.at(0);
-	ofstream OutPut;
-	Account*aux = getAccount(ID);
-
-	OutPut.open(groupName, ofstream::binary);
-	OutPut << aux->GetUsername();
-
-	OutPut << " ";
-	OutPut << ID;
-
-	//fprintf(f,"%s ",name.c_str()); 
-	
-	//fprintf(f," %d\n",ID);
-	
-	mem.AddInGroupList(NewGroup);
+		NewGroup->addAccount(getAccount(ID)); // il adaug in memorie
+		groupName.append(".txt"); // ii creez fisierul
+		vector<string> tokens = split(groupName, '.');
+		string name = tokens.at(0);
+		ofstream OutPut;
+		Account*aux = getAccount(ID); // scriu in fisier owner-ul
+		OutPut.open(groupName, ofstream::binary);
+		OutPut << aux->GetUsername();
+		mem.AddInGroupList(NewGroup);
+		string message = "group.";
+		message.append(groupName);
+		SendString(ID, message);
+	}
+	else {
+		string message = "This name is taken.Choose another one";
+		SendString(ID, message);
+	}
 }
-
+void Server::RewriteAccountFile()
+{
+	Memory& mem = Memory::GetInstance();
+	for (int i = 0; i < mem.GetAccountListSize(); i++) {
+		this->SaveAccount(mem.getAccountForIndex(i));
+	}
+}
 
 void Server::SingUp(std::string message) {
 	std::string accountNameAndPass = message.substr(13, std::string::npos);
@@ -65,12 +79,15 @@ void Server::SingUp(std::string message) {
 	int ID = std::stoi(tokens.at(2)); 
 	Memory& mem = Memory::GetInstance();
 
-	if (mem.VerifyExistanceAccount(username, password) == 0)
+	if (mem.VerifyExistanceAccount(username, password,ID) == 0)
 	{
-		//ID = mem.VerifyID(ID);
+	    mem.ChangeIdForSingUp(ID);
+		mem.CleanAccountFile();//sterg continutul fisirului
 		Account *newAccount = new Account(username, password,ID);
 		mem.AddInAccountList(newAccount);
-		this->SaveAccount(*newAccount);
+		this->RewriteAccountFile();// rescriu fisierul Accounts.txt
+		
+		
 		string IdMessage = "ID.";
 		IdMessage.append(std::to_string(ID));
 		SendString(ID, IdMessage);
@@ -78,9 +95,8 @@ void Server::SingUp(std::string message) {
 		SendString(ID, ToSend);
 		
 	}
-	else if (mem.VerifyExistanceAccount(username, password) == 1)
+	else if (mem.VerifyExistanceAccount(username, password,ID) == 1)
 	{
-		//ID = mem.VerifyID(ID);
 		string IdMessage = "ID.";
 		IdMessage.append(std::to_string(ID));
 		SendString(ID, IdMessage);
@@ -88,7 +104,7 @@ void Server::SingUp(std::string message) {
 		SendString(ID,message);
 	}
 	else {
-		//ID = mem.VerifyID(ID);
+	
 		string IdMessage = "ID.";
 		IdMessage.append(std::to_string(ID));
 		SendString(ID, IdMessage);
@@ -105,8 +121,12 @@ void Server::LogIn(std::string message) {
 	int ID = stoi(tokens.at(2));
 	
 	Memory& mem = Memory::GetInstance();
-	if (mem.VerifyExistanceAccount(username, password) == 1) {
+	if (mem.VerifyExistanceAccount(username, password,ID) == 1) {
 		// este in memorie
+		mem.ChangeIdForLogIn(ID,username); // le schimb in memorie
+		mem.CleanAccountFile();
+		this->RewriteAccountFile();
+
 		string IdMessage = "ID.";
 
 		IdMessage.append(std::to_string(ID));
@@ -123,14 +143,18 @@ void Server::LogIn(std::string message) {
 }
 
 
-void  Server::SaveAccount(Account a){
+void  Server::SaveAccount(Account *a){
+
 	LogClass&MyLogClass = LogClass::GetInstance();
-	MyLogClass.Write(a.GetUsername());
-	MyLogClass.Write(" ");
-	MyLogClass.Write(a.GetPassword());
-	MyLogClass.Write(" ");
-	MyLogClass.Write(std::to_string(a.GetId()));
-	MyLogClass.write('\n');
+	string aux;
+	aux.append(a->GetUsername());
+	aux.append(" ");
+	aux.append(a->GetPassword());
+	aux.append(" ");
+	aux.append(std::to_string(a->GetId()));
+	aux.append("\n");
+	MyLogClass.Write(aux);
+	
 }
 
 

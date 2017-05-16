@@ -46,9 +46,10 @@ void Memory::ViewAccountsList()
 	}
 }
 
+
 Account* Memory::getAccount(int ID)
 {
-	for (int i = 0; i <= AccountList.size(); i++)
+	for (int i = 0; i < AccountList.size(); i++)
 	{
 		if (AccountList[i]->GetId() == ID)
 			return AccountList[i];
@@ -83,30 +84,57 @@ void Memory::RestoreAccountList() {
 	else cout << "Unable to open file";
 };
 
-int Memory::RestoreIdNumber()
-{
-	int nr = 0;
-	string line;
-	ifstream myfile("Accounts.txt");
-	if (myfile.good()) {
-		while (getline(myfile, line)) {  // same as: while (getline( myfile, line ).good())
-			nr++;
-		}
-	}
-	return nr;
-}
-void Memory::RestoreGroupsList() {
-	//asta trebuie facuta
 
+void Memory::RestoreGroupsList() {
+	
+		LogGroups& Log = LogGroups::GetInstance();
+		string line;
+		ifstream myfile("Groups.txt");
+		if (myfile.good()) {
+			while (getline(myfile, line)) {  // same as: while (getline( myfile, line ).good())
+				vector<string>tokens = split(line, ' ');
+				string groupName = tokens.at(0);
+				string ownerName = tokens.at(1);
+				Group*group = new Group(groupName,ownerName);
+				this->AddInGroupList(group);
+			}
+			myfile.close();
+		}
+		else cout << "This server doesn't have any groups yet!\n";
 
 };
-int Memory::VerifyID(int id)
-{
-	for (int i = 0; i < AccountList.size(); i++)
-	{
-		if (id == AccountList[i]->GetId())
-			return AccountList.size();
+
+void Memory::ChangeIdForSingUp(int ID)
+{ 
+	if (AccountList.size() == 0) return;
+    
+	for (int i = 0; i < AccountList.size(); i++) {
+		if (AccountList[i]->GetId() == ID) {
+			AccountList[i]->SetId(AccountList.size());
+			// am schimbat ID-ul celui pe care l-am gasit cu acelasi ID
+		}
 	}
+	
+}
+
+void Memory::ChangeIdForLogIn(int ID,string username) {
+
+	if (AccountList.size() == 1) return;
+
+	for (int i = 0; i < AccountList.size(); i++) {
+		if (AccountList[i]->GetId() == ID && AccountList[i]->GetUsername() != username) {
+			AccountList[i]->SetId(AccountList.size()-1);
+			// am schimbat ID-ul celui pe care l-am gasit cu acelasi ID
+		}
+	}
+}
+void Memory::CleanAccountFile()
+{
+	fstream ofs;
+	ofs.open("Accounts.txt", ios::out | ios::trunc);
+	ofs.flush();
+	ofs.close();
+	
 }
 int Memory::GetId(std::string name)
 {
@@ -117,20 +145,27 @@ int Memory::GetId(std::string name)
 	}
 }
 
-int Memory::VerifyExistanceAccount(string usename, string pass)  
+int Memory::VerifyExistanceAccount(string usename, string pass,int ID)  
 {
 	for (int i = 0; i < AccountList.size(); i++)
 	{
 		if (!AccountList[i]->GetUsername().compare(usename)){
 
 			if (!AccountList[i]->GetPassword().compare(pass)) {
+				AccountList[i]->SetId(ID); // schimb Id-ul si in memorie
 				return 1; // deja exista
 			}
 			else return 2; // exista unul cu acelasi username
 		}
-		
 	}
 	return 0;
+}
+bool Memory::ExistsGroup(string groupName)
+{
+	for (int i = 0; i < GroupList.size(); i++) {
+		if (GroupList[i]->GetGroupName() == groupName) return true;
+	}
+	return false;
 }
 void Memory::GoOnline(int ID)
 {

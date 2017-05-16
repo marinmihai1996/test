@@ -38,7 +38,6 @@ void Client::LogIn()
 	if (this->OkSingUp == true)
 	{
 		this->ViewMenu2();
-		std::cout << "\n\n Menu2 \n" << endl;
 
 	}
 	else this->ViewMenu1();

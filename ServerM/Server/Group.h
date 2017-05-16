@@ -7,15 +7,15 @@ using namespace std;
 class Group
 {
 private:
-	string GroupName;
-	int OwnerID;
+	string groupName;
+	string ownerName;
 	deque<Account*> MemberList;
 
 public:
-	Group(int ID,string name);
-	string GetGroupName() { return this->GroupName; };
+	Group(string groupName, string ownerName);
+	string GetGroupName() { return this->groupName; };
 	string SetGroupName();
-	int GetOwnerId() { return this->OwnerID; };
+	string GetGroupOwnerName() { return this->ownerName; };
 	void addAccount(Account* a) { MemberList.push_back(a); };
 	void SeeMembers();
 

@@ -33,8 +33,7 @@ Server::Server(int PORT, bool BroadcastPublically) //Port = port to broadcast on
 	}
 	serverptr = this;
 	this->RestoreMemory();
-	Memory &mem = Memory::GetInstance();
-	//this->IDs = mem.RestoreIdNumber();
+	
 }
 
 bool Server::ListenForNewConnection()

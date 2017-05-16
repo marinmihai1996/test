@@ -1,3 +1,2 @@
-maria qaz 0
-bi bi 1
-eu eu 0
+maria qaz 2
+casi qaz 1
