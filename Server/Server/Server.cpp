@@ -78,6 +78,10 @@ bool Server::ProcessPacket(int ID, Packet _packettype)
     	std:string LogIn = "login";
 		std::string Invitation = "inviteclient";
 		std::string ChatGroup = "chatg";
+		
+		std::string deleteGroup = "deleteGroup";
+		std::string kickMember="kick"
+
 		if (Message.find(CreateGroupMessage)!= string::npos){
 			CreateGroup(ID, Message);
 		}
@@ -92,6 +96,13 @@ bool Server::ProcessPacket(int ID, Packet _packettype)
 		}
 		if (Message.find(ChatGroup) != string::npos) {
 			this->GroupChat(Message);
+		}
+
+		if (Message.find(deleteGroup) != string::npos) {
+			this->deleteGroup(Message);
+		}
+		if (Message.find(kickMember) != string::npos) {
+			this->kickMember(Message);
 		}
 
 		//broadcast message or private message

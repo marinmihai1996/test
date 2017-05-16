@@ -6,6 +6,7 @@
 #include"LogAccounts.h"
 #include"LogGroups.h"
 #include<fstream>
+#include "AccountOwner.h"
 using namespace std;
 ofstream write;
 static vector<string> split(const string &text, char sep) {
@@ -204,5 +205,44 @@ void Server::GroupChat(std::string Message)
 		}
 	}
 }
+
+void Server::deleteGroup(std::string Message)
+{
+	std::string MessageAndID = Message.substr(6, std::string::npos);
+	vector<string> tokens = split(MessageAndID, '.');
+
+	int ID = std::stoi(tokens.at(0));
+	string message = tokens.at(1);
+	Memory&mem = Memory::GetInstance();
+	if (mem.getAccount(ID)->deleteGroup())
+	{
+		mem.deleteGroup(mem.getGroupNr(message));
+		message.append(".txt");
+		char * writable = new char[message.size() + 1];
+		std::copy(message.begin(), message.end(), writable);
+		writable[message.size()] = '\0'; // don't forget the terminatination
+		remove(writable);
+		delete[] writable;
+	}
+
+}
+
+void kickMember(std::string Message)
+{
+	std::string MessageAndID = Message.substr(6, std::string::npos);
+	vector<string> tokens = split(MessageAndID, '.');
+
+	int ID = std::stoi(tokens.at(0));
+	string numeGrup = tokens.at(1);
+	string numeMembru = tokens.at(2);
+	Memory&mem = Memory::GetInstance();
+
+	if (mem.getAccount(ID)->kickMember())
+	{
+		mem.getGroup(numeGrup)->kickMember(numeMembru);
+	}
+
+}
+
 
 #endif

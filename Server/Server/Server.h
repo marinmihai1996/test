@@ -38,6 +38,8 @@ public:
 	void GroupChat(std::string);
 
 private:
+	void deleteGroup(std::string message);
+	void kickMember(std::string message);
 	bool sendall(int ID, char * data, int totalbytes);
 	bool recvall(int ID, char * data, int totalbytes);
 

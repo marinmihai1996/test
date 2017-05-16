@@ -9,3 +9,16 @@ Group::Group(string groupName, string ownerName)
 	std::cout << "Group " << groupName<< " requested by the client " << ownerName << " is created. This client is the owner" << std::endl;
 
 }
+
+void Group::kickMember(std::string name)
+{
+	for (int i = 0; i <= MemberList.size(); i++)
+	{
+		if (MemberList[i]->GetUsername().compare(name))
+		{
+			MemberList.erase(MemberList.begin()+i);
+		}
+	}
+
+
+}

@@ -147,6 +147,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Account.cpp" />
+    <ClCompile Include="AccountOwner.cpp" />
     <ClCompile Include="Actions.cpp" />
     <ClCompile Include="Group.cpp" />
     <ClCompile Include="LogAccounts.cpp" />
@@ -158,6 +159,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Account.h" />
+    <ClInclude Include="AccountOwner.h" />
     <ClInclude Include="Group.h" />
     <ClInclude Include="LogAccounts.h" />
     <ClInclude Include="LogGroups.h" />

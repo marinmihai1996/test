@@ -19,6 +19,9 @@ private:
 	deque <Account*> AccountList;
 
 public:
+	void deleteGroup(int a);
+	int getGroupNr(std::string name);
+	Group* getGroup(std::string name);
 	static Memory& GetInstance();
 	int GetAccountListSize() { return AccountList.size(); };
 	

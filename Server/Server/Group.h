@@ -17,6 +17,7 @@ public:
 	string SetGroupName();
 	string GetGroupOwnerName() { return this->ownerName; };
 	void addAccount(Account* a) { MemberList.push_back(a); };
+	void kickMember(std::string name);
 	void SeeMembers();
 
 

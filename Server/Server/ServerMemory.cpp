@@ -178,4 +178,31 @@ void Memory::GoOnline(int ID)
 	}
 }
 
+void Memory::deleteGroup(int i)
+{
+	GroupList.erase(GroupList.begin()+i);
+}
 
+
+int Memory::getGroupNr(std::string name)
+{
+	for (int i = 0; i < GroupList.size(); i++)
+	{
+		if (GroupList[i]->GetGroupName().compare(name) == 0)
+		{
+			return i;
+		}
+	}
+}
+
+Group* Memory::getGroup(std::string name)
+{
+	for (int i = 0; i < GroupList.size(); i++)
+	{
+		if (GroupList[i]->GetGroupName().compare(name) == 0)
+		{
+			return GroupList[i];
+		}
+	}
+	return NULL;
+}

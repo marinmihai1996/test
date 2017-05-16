@@ -37,6 +37,7 @@ void Client::LogIn()
 	fflush(NULL);
 	if (this->OkSingUp == true)
 	{
+		setStatus(off);
 		this->ViewMenu2();
 
 	}
