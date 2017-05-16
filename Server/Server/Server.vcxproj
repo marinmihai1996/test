@@ -150,6 +150,7 @@
     <ClCompile Include="Actions.cpp" />
     <ClCompile Include="Group.cpp" />
     <ClCompile Include="LogAccounts.cpp" />
+    <ClCompile Include="LogGroups.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="SendGetMethods.cpp" />
     <ClCompile Include="Server.cpp" />
@@ -159,6 +160,7 @@
     <ClInclude Include="Account.h" />
     <ClInclude Include="Group.h" />
     <ClInclude Include="LogAccounts.h" />
+    <ClInclude Include="LogGroups.h" />
     <ClInclude Include="Server.h" />
     <ClInclude Include="ServerMemory.h" />
   </ItemGroup>

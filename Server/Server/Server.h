@@ -13,8 +13,7 @@ using namespace std;
 
 enum Packet
 {
-	P_ChatMessage,
-	P_Int
+	P_ChatMessage
 };
 
 class Server
@@ -26,13 +25,22 @@ public:
 	void SingUp(std::string message);
 	void LogIn(std::string message);
 	void ViewAccountsList();
-	void SaveAccount(Account);
+	void SaveAccount(Account*);
+	void RewriteAccountFile();
 	void RestoreMemory();
+	
+	
+	
 	Account* getAccount(int ID);
 	int GetIdClient(std::string name);
 	void InviteClient(std::string);
-	void ConnecttoGroup(int ID, std::string name);
+
+	void GroupChat(std::string);
+
 private:
+	bool sendall(int ID, char * data, int totalbytes);
+	bool recvall(int ID, char * data, int totalbytes);
+
 	bool SendInt(int ID, int _int);
 	bool GetInt(int ID, int & _int);
 
@@ -50,7 +58,7 @@ private:
 private:
 	SOCKET Connections[100];
 	int IDs = 0;
-
+	//int IDs;
 	SOCKADDR_IN addr; //Address that we will bind our listening socket to
 	int addrlen = sizeof(addr);
 	SOCKET sListen;

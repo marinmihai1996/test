@@ -1,7 +1,2 @@
-maria qaz 0
-dia qa 1
-cori qaz 2
-ana pl 3
-eu eu 4
-ruxi ruxi 5
-sava sava 6
+maria qaz 1
+casi qaz 1

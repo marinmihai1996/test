@@ -4,6 +4,7 @@
 #include"Server.h"
 #include"Account.h"
 #include"LogAccounts.h"
+#include"LogGroups.h"
 #include<fstream>
 using namespace std;
 ofstream write;
@@ -31,29 +32,44 @@ int Server::GetIdClient(std::string name)
 
 void Server::CreateGroup(int ID,std::string Message){ 
 	std::string groupName = Message.substr(11, std::string::npos);
-	Group* NewGroup = new Group(ID, groupName);
-	Memory& mem = Memory::GetInstance();
-	NewGroup->addAccount(getAccount(ID));
-	groupName.append(".txt");
-   // FILE *f = fopen(groupName.c_str(),"a+");
-	vector<string> tokens = split(groupName, '.');
-	string name = tokens.at(0);
-	ofstream OutPut;
-	Account*aux = getAccount(ID);
+	Memory&mem = Memory::GetInstance();
+	string ownerName = mem.getAccount(ID)->GetUsername();
+	if (mem.ExistsGroup(groupName) == false)
+	{
+		Group* NewGroup = new Group(groupName, ownerName);
+		LogGroups&groups = LogGroups::GetInstance();
+		string auxx;
+		auxx.append(groupName);
+		auxx.append(" ");
+		auxx.append(ownerName);
+		auxx.append("\n");
+		groups.Write(auxx);
 
-	OutPut.open(groupName, ofstream::binary);
-	OutPut << aux->GetUsername();
-
-	OutPut << " ";
-	OutPut << ID;
-
-	//fprintf(f,"%s ",name.c_str()); 
-	
-	//fprintf(f," %d\n",ID);
-	
-	mem.AddInGroupList(NewGroup);
+		NewGroup->addAccount(getAccount(ID)); // il adaug in memorie
+		groupName.append(".txt"); // ii creez fisierul
+		vector<string> tokens = split(groupName, '.');
+		string name = tokens.at(0);
+		ofstream OutPut;
+		Account*aux = getAccount(ID); // scriu in fisier owner-ul
+		OutPut.open(groupName, ofstream::binary);
+		OutPut << aux->GetUsername();
+		mem.AddInGroupList(NewGroup);
+		string message = "group.";
+		message.append(groupName);
+		SendString(ID, message);
+	}
+	else {
+		string message = "This name is taken.Choose another one";
+		SendString(ID, message);
+	}
 }
-
+void Server::RewriteAccountFile()
+{
+	Memory& mem = Memory::GetInstance();
+	for (int i = 0; i < mem.GetAccountListSize(); i++) {
+		this->SaveAccount(mem.getAccountForIndex(i));
+	}
+}
 
 void Server::SingUp(std::string message) {
 	std::string accountNameAndPass = message.substr(13, std::string::npos);
@@ -63,60 +79,82 @@ void Server::SingUp(std::string message) {
 	int ID = std::stoi(tokens.at(2)); 
 	Memory& mem = Memory::GetInstance();
 
-	if (mem.VerifyExistanceAccount(username, password) == 0)
+	if (mem.VerifyExistanceAccount(username, password,ID) == 0)
 	{
-		ID = mem.VerifyID(ID);
+	    mem.ChangeIdForSingUp(ID);
+		mem.CleanAccountFile();//sterg continutul fisirului
 		Account *newAccount = new Account(username, password,ID);
 		mem.AddInAccountList(newAccount);
-		this->SaveAccount(*newAccount);
-		int AccountCreated = 1000;
-		SendInt(ID, AccountCreated);
-
+		this->RewriteAccountFile();// rescriu fisierul Accounts.txt
+		
+		
+		string IdMessage = "ID.";
+		IdMessage.append(std::to_string(ID));
+		SendString(ID, IdMessage);
+		string ToSend = "Your account is created!\n";
+		SendString(ID, ToSend);
+		
 	}
-	else if (mem.VerifyExistanceAccount(username, password) == 1)
+	else if (mem.VerifyExistanceAccount(username, password,ID) == 1)
 	{
-		///string message = "This account already exists. Please Login!\n";
-		int Accountexists = 1001;
-		SendInt(ID, Accountexists);
+		string IdMessage = "ID.";
+		IdMessage.append(std::to_string(ID));
+		SendString(ID, IdMessage);
+		string message = "This account already exists. Please Login!\n";
+		SendString(ID,message);
 	}
 	else {
-		//string message = "This username is taken.Please choose another one!\n";
-		int SameUsername = 1002;
-		SendInt(ID, SameUsername);
+	
+		string IdMessage = "ID.";
+		IdMessage.append(std::to_string(ID));
+		SendString(ID, IdMessage);
+		string message = "This username is taken.Please choose another one!\n";
+		SendString(ID, message);
 	}
 }
 void Server::LogIn(std::string message) {
+	
 	std::string accountNameAndPass = message.substr(6, std::string::npos);
 	vector<string> tokens = split(accountNameAndPass, '.'); // put the strings in a vector -> delimitator='.'
 	string username = tokens.at(0);
 	string password = tokens.at(1);
-	int ID = std::stoi(tokens.at(2));
+	int ID = stoi(tokens.at(2));
 	
 	Memory& mem = Memory::GetInstance();
-	ID = mem.getID(username);
-	if (mem.VerifyExistanceAccount(username, password) == 1) {
+	if (mem.VerifyExistanceAccount(username, password,ID) == 1) {
 		// este in memorie
-		
+		mem.ChangeIdForLogIn(ID,username); // le schimb in memorie
+		mem.CleanAccountFile();
+		this->RewriteAccountFile();
+
+		string IdMessage = "ID.";
+
+		IdMessage.append(std::to_string(ID));
+		SendString(ID, IdMessage);
+		string message= "You are now online!\n";
 		mem.GoOnline(ID);
-		int messageCode = 1003;
-		this->SendInt(ID, messageCode);
+		this->SendString(ID, message);
 	}
 	else {
 		//nu e in memorie
-		int messageCode = 1004;
-		this->SendInt(ID, messageCode);
+		string message = "You don't have an account!Please Sing up!\n";
+		this->SendString(ID, message);
 	}
 }
 
 
-void  Server::SaveAccount(Account a){
+void  Server::SaveAccount(Account *a){
+
 	LogClass&MyLogClass = LogClass::GetInstance();
-	MyLogClass.Write(a.GetUsername());
-	MyLogClass.Write(" ");
-	MyLogClass.Write(a.GetPassword());
-	MyLogClass.Write(" ");
-	MyLogClass.Write(std::to_string(a.GetId()));
-	MyLogClass.write('\n');
+	string aux;
+	aux.append(a->GetUsername());
+	aux.append(" ");
+	aux.append(a->GetPassword());
+	aux.append(" ");
+	aux.append(std::to_string(a->GetId()));
+	aux.append("\n");
+	MyLogClass.Write(aux);
+	
 }
 
 
@@ -145,18 +183,26 @@ void Server::InviteClient(string message)
 		}
 	}
 	  
-
 }
 
 
 
-void Server::ConnecttoGroup(int ID, std::string Message) {
-	std::string groupName = Message.substr(11, std::string::npos);
-	Memory& mem = Memory::GetInstance();
+void Server::GroupChat(std::string Message)
+{
+	std::string MessageAndID = Message.substr(6, std::string::npos);
+	vector<string> tokens = split(MessageAndID,'.'); // put the strings in a vector -> delimitator='.'
+	int ID = std::stoi(tokens.at(0));
+	string message = tokens.at(1);
 
-	////trebuie trimis la client clientii c=pentru chat
-
+	for (int i = 0; i < IDs; i++)
+	{
+		if (i == ID) //If connection is the user who sent the message...
+			continue;//Skip to the next user since there is no purpose in sending the message back to the user who sent it.
+		if (!SendString(i, message)) //Send message to connection at index i, if message fails to be sent...
+		{
+			std::cout << "Failed to send message from client ID: " << ID << " to client ID: " << i << std::endl;
+		}
+	}
 }
-
 
 #endif

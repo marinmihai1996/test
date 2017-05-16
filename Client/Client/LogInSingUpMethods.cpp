@@ -38,7 +38,6 @@ void Client::LogIn()
 	if (this->OkSingUp == true)
 	{
 		this->ViewMenu2();
-		std::cout << "\n\n Menu2 \n" << endl;
 
 	}
 	else this->ViewMenu1();
@@ -77,7 +76,7 @@ void Client::SingUp()
 	aux.append(username);
 	aux.append(".");
 	pass.append(".");
-	pass.append(std::to_string(this->ID));
+    pass.append(std::to_string(this->ID)); 
 	this->SendString(aux, pass);
 	system("pause");
 	system("cls");
