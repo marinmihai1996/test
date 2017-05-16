@@ -46,11 +46,8 @@ bool Client::ProcessPacket(Packet _packettype)
 			this->ViewMenu3(groupName);
 		}
 		if (Message.find("This name is taken.Choose another one") != string::npos) {
-			system("cls");
  			std::cout << Message << std::endl;
-			
- 			//system("pause");
-			this->ViewMenu2();
+			fflush(NULL);
 			break;
 		}
 

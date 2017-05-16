@@ -2,6 +2,7 @@
 #include<iostream>
 #include<string>
 #include<conio.h>
+
 using namespace std;
 
 
@@ -38,16 +39,19 @@ void Client::ViewMenu1()
 
 void Client::ViewMenu2() {
 
-	et2:
-  // int option;
+et2:
+	cin.clear();
+	cin.sync();
+   char option;
    fflush(NULL);
    std::cout << "1.Create a group" << std::endl;
    std::cout << "2.See your group invitation" << std::endl;
    std::cout << "3. Acces a group.You have to be a member first." << std::endl;
-
-  // std::cin >> option;
-   char option;
-   option = _getch();
+  
+   std::cin >> option;
+  // fflush(NULL);
+ //  char option;
+  // option = std::cin.get();
        switch (option){
        case '1':
 	   {
@@ -55,6 +59,8 @@ void Client::ViewMenu2() {
 		   std::cout << "Choose the group name " << std::endl;
 		   std::cin >> name;
 		   CreateGroup(name);
+		   system("cls");
+		   goto et2;
 		   break; }
 	   case '2':
 		   break;
@@ -67,15 +73,15 @@ void Client::ViewMenu2() {
 
 void Client::ViewMenu3(string &groupName) {
 	et3:
-	//int option;
+	int option;
 	fflush(NULL);
 	std::cout << "1.Send a invitation to a client\n" << std::endl;
 	std::cout << "2.Quick add a client\n" << std::endl;
 	std::cout << "3. Go to chat\n" << std::endl;
 	std::cout << " 4. Go back\n" << std::endl;
-	//std::cin >> option;
-	char option;
-	option = _getch();
+	std::cin >> option;
+	//char option;
+	//option = _getch();
 	switch (option) {
 	case '1':
 	{
