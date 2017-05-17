@@ -30,11 +30,13 @@ public:
 	void AddInAccountList(Account*);
 
 	//restore functions
-	int RestoreIdNumber();
 	void RestoreAccountList();
 	void RestoreGroupsList();  
+	void RestoreGroupAccountsList(Group*);
 	
 	Account* getAccount(int ID);
+	Account* getAccount(string name);
+	Group* getGroup(string name);
 	int GetId(std::string name);
 	
 	int VerifyExistanceAccount(string,string,int);
@@ -45,4 +47,8 @@ public:
 	void ChangeIdForSingUp(int ID);
 	void CleanAccountFile();
 	void ChangeIdForLogIn(int ID,string username);
-};
+
+	void deleteGroup(int a);
+	int getGroupNr(std::string name);
+	
+};  

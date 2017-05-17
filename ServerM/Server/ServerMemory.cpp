@@ -56,14 +56,49 @@ Account* Memory::getAccount(int ID)
 	}
 	return NULL;
 }
+
+
+Account* Memory::getAccount(string name)
+{
+	for (int i = 0; i < AccountList.size(); i++)
+	{
+		if (AccountList[i]->GetUsername() == name)
+			return AccountList[i];
+	}
+	return NULL;
+}
+
+Group*Memory::getGroup(string name) {
+
+	for (int i = 0; i < GroupList.size(); i++) {
+		if (GroupList[i]->GetGroupName() == name)
+			return GroupList[i];
+	}
+	return NULL;
+}
+
 void Memory::AddInAccountList(Account*a){
 
 	AccountList.push_back(a);
 }
+void Memory::RestoreGroupAccountsList(Group*group)
+{
+	std::string groupName = group->GetGroupName();
+	groupName.append(".txt");
+	ifstream InFile(groupName); // deschid fisierul grupului unde se afla membrii
+	string line;
+	if (InFile.good()) {
+		while (getline(InFile, line)) {
+			string username = line;;
+			Account *account = this->getAccount(username);
+			group->addAccount(account);
+		}
+	}
+}
+void Memory::AddInGroupList(Group*group){
 
-void Memory::AddInGroupList(Group*a){
-
-	GroupList.push_back(a);
+	GroupList.push_back(group); 
+	this->RestoreGroupAccountsList(group); // pentru fiecare grup, fac restore la account-urile membre
 }
 void Memory::RestoreAccountList() {
 	LogClass& Log = LogClass::GetInstance();
@@ -103,30 +138,47 @@ void Memory::RestoreGroupsList() {
 		else cout << "This server doesn't have any groups yet!\n";
 
 };
-
+bool find(int a, int *v,int nr) {
+	for (int i = 0; i < nr; i++) {
+		if (v[i] == a) return true;
+	}
+	return false;
+}
 void Memory::ChangeIdForSingUp(int ID)
 { 
 	if (AccountList.size() == 0) return;
-    
+	int* vector = new int[AccountList.size()];
+	for (int i = 0; i < AccountList.size(); i++) {
+		vector[i] = AccountList[i]->GetId();
+	}
 	for (int i = 0; i < AccountList.size(); i++) {
 		if (AccountList[i]->GetId() == ID) {
-			AccountList[i]->SetId(AccountList.size());
+			int a = 0;
+			while (find(a, vector, AccountList.size()) == true) a++;	
+			AccountList[i]->SetId(a);
 			// am schimbat ID-ul celui pe care l-am gasit cu acelasi ID
 		}
 	}
-	
+	delete[AccountList.size()] vector;
 }
 
 void Memory::ChangeIdForLogIn(int ID,string username) {
 
 	if (AccountList.size() == 1) return;
-
+	int* vector = new int[AccountList.size()];
+	for (int i = 0; i < AccountList.size(); i++) {
+		vector[i] = AccountList[i]->GetId();
+	}
 	for (int i = 0; i < AccountList.size(); i++) {
 		if (AccountList[i]->GetId() == ID && AccountList[i]->GetUsername() != username) {
-			AccountList[i]->SetId(AccountList.size()-1);
+			int a = 0;
+			while (find(a, vector, AccountList.size()) == true) a++;
+			AccountList[i]->SetId(a);
 			// am schimbat ID-ul celui pe care l-am gasit cu acelasi ID
 		}
 	}
+	delete [AccountList.size()] vector;
+
 }
 void Memory::CleanAccountFile()
 {
@@ -179,3 +231,15 @@ void Memory::GoOnline(int ID)
 }
 
 
+void Memory::deleteGroup(int i)
+{
+	GroupList.erase(GroupList.begin() + i);
+}
+
+
+int Memory::getGroupNr(std::string name)
+ {
+	for (int i = 0; i < GroupList.size(); i++)
+		 if (GroupList[i]->GetGroupName().compare(name) == 0)
+			return i;		
+}

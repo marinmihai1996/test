@@ -1,5 +1,5 @@
 #include "Server.h"
-
+#define _SCL_SECURE_NO_WARNINGS
 Server::Server(int PORT, bool BroadcastPublically) //Port = port to broadcast on. BroadcastPublically = false if server is not open to the public (people outside of your router), true = server is open to everyone (assumes that the port is properly forwarded on router settings)
 {
 	//Winsock Startup
@@ -78,6 +78,9 @@ bool Server::ProcessPacket(int ID, Packet _packettype)
     	std:string LogIn = "login";
 		std::string Invitation = "inviteclient";
 		std::string ChatGroup = "chatg";
+		std::string AccesGroup = "access";
+		std::string deleteGroup = "deleteGroup";
+		std::string kickMember = "kick";
 		if (Message.find(CreateGroupMessage)!= string::npos){
 			CreateGroup(ID, Message);
 		}
@@ -93,6 +96,17 @@ bool Server::ProcessPacket(int ID, Packet _packettype)
 		if (Message.find(ChatGroup) != string::npos) {
 			this->GroupChat(Message);
 		}
+		if (Message.find(AccesGroup) != string::npos) {
+			this->ConnectToGroup(Message);
+		}
+		if (Message.find(deleteGroup) != string::npos) {
+			this->deleteGroup(Message);
+			
+		}
+		if (Message.find(kickMember) != string::npos) {
+			this->kickMember(Message);
+		}
+		
 
 		//broadcast message or private message
 		/*for (int i = 0; i < IDs ;i++)

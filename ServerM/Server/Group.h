@@ -18,7 +18,8 @@ public:
 	string GetGroupOwnerName() { return this->ownerName; };
 	void addAccount(Account* a) { MemberList.push_back(a); };
 	void SeeMembers();
-
+	void kickMember(std::string name);
+	bool ExistMember(Account*);
 
 
 };
