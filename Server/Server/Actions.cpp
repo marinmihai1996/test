@@ -1,14 +1,22 @@
 #ifndef _header_4344
 #define _header_4334
 #include<vector>
+#include<direct.h>
 #include"Server.h"
 #include"Account.h"
 #include"LogAccounts.h"
 #include"LogGroups.h"
 #include<fstream>
-#include "AccountOwner.h"
 using namespace std;
 ofstream write;
+
+void CreateDirectory(string name)
+{
+	string path = "C:/Users/Maria/Documents/git/test/ServerM/Server/";
+	path.append(name);
+	_mkdir(path.c_str());
+}
+
 static vector<string> split(const string &text, char sep) {
 	vector<string> tokens;
 	size_t start = 0, end = 0;
@@ -55,7 +63,7 @@ void Server::CreateGroup(int ID,std::string Message){
 		OutPut.open(groupName, ofstream::binary);
 		OutPut << aux->GetUsername();
 		mem.AddInGroupList(NewGroup);
-		string message = "group.";
+		string message = "groupCreated.";
 		message.append(groupName);
 		SendString(ID, message);
 	}
@@ -87,7 +95,7 @@ void Server::SingUp(std::string message) {
 		Account *newAccount = new Account(username, password,ID);
 		mem.AddInAccountList(newAccount);
 		this->RewriteAccountFile();// rescriu fisierul Accounts.txt
-		
+		CreateDirectory(username);
 		
 		string IdMessage = "ID.";
 		IdMessage.append(std::to_string(ID));
@@ -206,16 +214,45 @@ void Server::GroupChat(std::string Message)
 	}
 }
 
+void Server::ConnectToGroup(std::string Message) {
+	
+	std::string groupNameAndID = Message.substr(7, std::string::npos);
+	Memory& mem = Memory::GetInstance();
+	vector<string> tokens = split(groupNameAndID,'.');
+	string groupName = tokens.at(0);
+	int userID = stoi(tokens.at(1));
+	Account*user = mem.getAccount(userID);
+	//verific daca grupul exista
+	if (mem.ExistsGroup(groupName) == true) {
+		Group *group = mem.getGroup(groupName);
+		//acum verific daca user-ul face parte din grup
+		if (group->ExistMember(user) == true) {
+			string message = "InGroup.";
+			message.append(groupName);
+			SendString(userID, message);
+		}
+		else {
+			string message = "You are not a member of this group!";
+			SendString(userID, message);
+		}
+	}
+	else {
+		string message = "This group do not exists!";
+		SendString(userID, message);
+	}
+
+}
+
 void Server::deleteGroup(std::string Message)
-{
+ {
 	std::string MessageAndID = Message.substr(6, std::string::npos);
 	vector<string> tokens = split(MessageAndID, '.');
-
-	int ID = std::stoi(tokens.at(0));
+	
+		int ID = std::stoi(tokens.at(0));
 	string message = tokens.at(1);
 	Memory&mem = Memory::GetInstance();
 	if (mem.getAccount(ID)->deleteGroup())
-	{
+	 {
 		mem.deleteGroup(mem.getGroupNr(message));
 		message.append(".txt");
 		char * writable = new char[message.size() + 1];
@@ -223,26 +260,24 @@ void Server::deleteGroup(std::string Message)
 		writable[message.size()] = '\0'; // don't forget the terminatination
 		remove(writable);
 		delete[] writable;
-	}
-
+		}
+	
 }
 
-void kickMember(std::string Message)
-{
+void Server:: kickMember(std::string Message)
+ {
 	std::string MessageAndID = Message.substr(6, std::string::npos);
 	vector<string> tokens = split(MessageAndID, '.');
-
-	int ID = std::stoi(tokens.at(0));
+	
+		int ID = std::stoi(tokens.at(0));
 	string numeGrup = tokens.at(1);
 	string numeMembru = tokens.at(2);
 	Memory&mem = Memory::GetInstance();
-
-	if (mem.getAccount(ID)->kickMember())
-	{
-		mem.getGroup(numeGrup)->kickMember(numeMembru);
-	}
-
+	
+		if (mem.getAccount(ID)->kickMember())
+		 mem.getGroup(numeGrup)->kickMember(numeMembru);
+		
+	
 }
-
 
 #endif

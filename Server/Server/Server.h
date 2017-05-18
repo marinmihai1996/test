@@ -36,10 +36,12 @@ public:
 	void InviteClient(std::string);
 
 	void GroupChat(std::string);
+	void ConnectToGroup(std::string);
 
 private:
 	void deleteGroup(std::string message);
 	void kickMember(std::string message);
+
 	bool sendall(int ID, char * data, int totalbytes);
 	bool recvall(int ID, char * data, int totalbytes);
 
@@ -55,7 +57,7 @@ private:
 	bool ProcessPacket(int ID, Packet _packettype);
 
 	static void ClientHandlerThread(int ID);
-	
+	 
 
 private:
 	SOCKET Connections[100];

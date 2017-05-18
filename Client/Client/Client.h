@@ -15,8 +15,9 @@ enum Packet
 class Client
 {
 public: //Public functions
-	enum statut { off, normal, admin, owner };
 
+	enum statut { off, normal, admin, owner };
+	
 	Client(std::string IP, int PORT);
 	bool Connect();
 
@@ -27,19 +28,22 @@ public: //Public functions
 	void ViewMenu1();
 	void ViewMenu2();
 	void ViewMenu3(std::string &);
+
+	void ConnectToGroup(std::string groupName);
+	
+
+
+	
 	int ID;
-	
-	//static unsigned int NextID; 
-	
+	bool OKforGroup = false;
 
 
 private: //Private functions
-	
+
 	statut Statut;
 	void setStatus(statut a) { Statut = a; }
 	statut getStatut() { return Statut; }
-
-
+	
 	bool ProcessPacket(Packet _packettype);
 	static void ClientThread();
 	//Sending Funcs

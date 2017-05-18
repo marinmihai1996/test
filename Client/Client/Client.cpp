@@ -1,4 +1,5 @@
 #include "Client.h"
+#include<conio.h>
 using namespace std;
 #include<vector>
 static vector<string> split(const string &text, char sep) {
@@ -23,35 +24,43 @@ bool Client::ProcessPacket(Packet _packettype)
 		std::string Message; //string to store our message we received
 		if (!GetString(Message)) //Get the chat message and store it in variable: Message
 			return false; //If we do not properly get the chat message, return false
-		if (Message.find("Connected")!=string::npos){
+		if (Message.find("Connected") != string::npos) {
 			std::cout << "Welcome to the M&M GroupChat!" << std::endl;
 			//std::cout << "Your ID = " << this->ID << endl;
 			break;
 		}
-		if (Message.find("ID") != string::npos){
+		if (Message.find("ID") != string::npos) {
 			vector<string> tokens = split(Message, '.');
 			this->ID = stoi(tokens.at(1));
 			//std::cout << "Your Id is " << this->ID << endl;
 			break;
 		}
-		if (Message.find("You are now online") != string::npos){
+		if (Message.find("You are now online") != string::npos) {
 			this->OkSingUp = true;
 			std::cout << Message << std::endl;
 			break;
 		}
-		if (Message.find("group") != string::npos) {
+		if (Message.find("groupCreated") != string::npos) {
 			vector<string> tokens = split(Message, '.');
 			string groupName = tokens.at(1);
-			system("cls");
-			this->ViewMenu3(groupName);
-		}
-		if (Message.find("This name is taken.Choose another one") != string::npos) {
- 			std::cout << Message << std::endl;
+			std::cout << "The group " << groupName << " is created" << std::endl;
 			fflush(NULL);
+			//this->ViewMenu2();
 			break;
 		}
-
+		
+		if (Message.find("InGroup") != string::npos) {
+			vector<string> tokens = split(Message, '.');
+			string groupName = tokens.at(1);
+			this->OKforGroup = true;
+			fflush(NULL);
+			//this->ViewMenu3(groupName);
+			break;
+		}
+		
+		system("cls");
 		std::cout << Message << std::endl; //Display the message to the user
+		Sleep(1000);
 		break;
 	}
 	default: //If packet type is not accounted for
@@ -60,6 +69,7 @@ bool Client::ProcessPacket(Packet _packettype)
 	}
 	return true;
 }
+
 
 void Client::ClientThread()
 {

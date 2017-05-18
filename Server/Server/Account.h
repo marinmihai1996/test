@@ -16,10 +16,8 @@ private:
 
 public:
 
-	virtual bool deleteGroup() { return true; };
-	virtual bool kickMember() { return true; };
-
-
+	bool deleteGroup() { return true; };
+	bool kickMember() { return true; };
 	string GetUsername() { return this->username; };
 	string GetPassword() { return this->password; };
 	int GetId() { return this->ID; };

@@ -13,11 +13,20 @@ void Client::CreateGroup(std::string groupName)
 	Sleep(2000);
 	system("cls");
 	fflush(NULL);
-	//this->ViewMenu3(groupName);
-
-
 
 	Sleep(10);
+
+}
+void Client::ConnectToGroup(std::string groupName) {
+
+	this->OKforGroup = false;
+	std::string message = "access";
+	message.append(".");
+	message.append(groupName);
+	message.append(".");
+	message.append(std::to_string(this->ID));
+	SendString(message);
+	Sleep(1000);
 
 }
 
@@ -39,6 +48,6 @@ void Client::ChatGroup(std::string groupName)
 		Sleep(10);
 	}
 	system("cls");
-	this->ViewMenu3(groupName);
+	//this->ViewMenu3(groupName);
 	
 }
