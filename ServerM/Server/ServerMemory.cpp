@@ -243,3 +243,14 @@ int Memory::getGroupNr(std::string name)
 		 if (GroupList[i]->GetGroupName().compare(name) == 0)
 			return i;		
 }
+
+vector<string> Memory::GetMemberList(Group*group) {
+	vector<string> tokens;
+	for (int i = 0; i < GroupList.size(); i++)
+	{
+		if (GroupList[i]->GetGroupName() == group->GetGroupName()) {
+			tokens = GroupList[i]->GetMemberList();
+		}
+	}
+	return tokens;
+}

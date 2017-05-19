@@ -1,2 +1,3 @@
-maria qaz 2
-cristi qaz 0
+maria qaz 0
+casi qaz 1
+dia qaz 2

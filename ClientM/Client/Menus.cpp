@@ -5,22 +5,18 @@
 
 using namespace std;
 
-
-
 void Client::ViewMenu1()
 {
-	et:
+et:
 	fflush(NULL);
-	//std::cout << "ID=" << ID << std::endl;
+	
 	std::cout << "MENU" << std::endl;
-	//int option;
 
 	std::cout << "1. SingUp" << std::endl;
 	std::cout << "2. LogIn" << std::endl;
-	
-	//std::cin >> option;
+
 	char option;
-	option =_getch();
+	option = _getch();
 	switch (option)
 	{
 	case '1':
@@ -28,67 +24,76 @@ void Client::ViewMenu1()
 		break;
 	case '2':
 		LogIn();
-	    break;
+		break;
 	default:
 	{
 		system("cls"); }
-		goto et; }
+	goto et;
 	}
+}
 
 
 
-void Client::ViewMenu2() {
+void Client::ViewMenu2() { // ai de sters aici
 
 et2:
+	system("cls");
 	cin.clear();
 	cin.sync();
 	char option;
 	fflush(NULL);
+	//system("cls");
 	std::cout << "1.Create a group" << std::endl;
-	std::cout << "2.See your group invitation" << std::endl;
+	std::cout << "2.See your group invitations" << std::endl;
 	std::cout << "3. Acces a group.You have to be a member first." << std::endl;
-
 	option = _getch();
+
+	switch (option) {
+	case '1':
+	{
+		std::string name;
+		std::cout << "Choose the group name " << std::endl;
+		std::cin >> name;
+		CreateGroup(name);
+		system("cls");
+		goto et2;
+		break;
+	}
+	case '2':
+	{
+		string message = "seeinvitation.";
+		message.append(std::to_string(this->ID));
+		SendString(message);
+		goto et2;
+		break;
+	}
+	case '3':
+	{
+		std::string name;
+		std::cout << "Group name: " << std::endl;
+		std::cin >> name;
+		this->ConnectToGroup(name);
+		if (this->OKforGroup == true)
+		{
+			this->ViewMenu3(name);
+			break;
+		}
+		else {
+			goto et2;
+			break;
+		}
+	}
 	
-       switch (option){
-       case '1':
-	   {
-		   std::string name;
-		   std::cout << "Choose the group name " << std::endl;
-		   std::cin >> name;
-		   CreateGroup(name);
-		   system("cls");
-		   goto et2;
-		   break;
-		    }
-	   case '2':
-		   break;
-	   case '3':
-	   {
-		   std::string name;
-		   std::cout << "Group name: " << std::endl;
-		   std::cin >> name;
-		   this->ConnectToGroup(name);
-		   if (this->OKforGroup == true) {
-			   this->ViewMenu3(name);
-			  
-			   break;
-		   }
-		   else {
-			   goto et2;
-			   break;
-		   }
-	   }
-	   default:
-	   {
-		   system("cls");
-		  goto et2;
-	   }
-	   }
+	default:
+	{
+		system("cls");
+		goto et2;
+	}
+	}
 }
 
 void Client::ViewMenu3(string &groupName) {
-	et3:
+et3:
 	cin.clear();
 	cin.sync();
 	char option;
@@ -97,30 +102,37 @@ void Client::ViewMenu3(string &groupName) {
 	std::cout << "1.Send a invitation to a client(Only for owner/admin)\n" << std::endl;
 	std::cout << "2.Quick add a client (Only for owner/admin)\n" << std::endl;
 	std::cout << "3. Go to chat\n" << std::endl;
-	std::cout << " 4. Go back\n" << std::endl;
-	
+	std::cout << "4. Go back\n" << std::endl;
+
 	option = _getch();
 	switch (option) {
-	case '1':
-	{
-		std::string name;
+	case '1': {
+
+		std::string username;
 		std::cout << "Insert client name" << std::endl;
-		std::cin >> name;
-    	std:string aux = "inviteclient";
-		aux.append(name);
+		std::cin >> username;
+	std:string aux = "inviteclient";
 		aux.append(".");
-		std::string namegroup = groupName;
-		this->SendString(aux, namegroup);
-		break; }
+		aux.append(username);
+		aux.append(".");
+		aux.append(groupName);
+		SendString(aux);
+		goto et3;
+		break;
+	}
 	case '2':
 		break;
 	case '3':
-		this->ChatGroup(groupName);
+	{ 
+	      this->InChat = true;
+	      this->ChatGroup(groupName);
+          break;
+	}
 	case '4':
 	{
 		system("cls");
-   	 // this->ViewMenu2();
-	  break;
+		this->ViewMenu2();
+		break;
 	}
 	default:
 	{
@@ -130,5 +142,4 @@ void Client::ViewMenu3(string &groupName) {
 	}
 
 }
-
 

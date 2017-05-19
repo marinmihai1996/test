@@ -81,6 +81,8 @@ bool Server::ProcessPacket(int ID, Packet _packettype)
 		std::string AccesGroup = "access";
 		std::string deleteGroup = "deleteGroup";
 		std::string kickMember = "kick";
+		std::string JoinGroup = "joingroup";
+		std::string SeeInvitation = "seeinvitation";
 		if (Message.find(CreateGroupMessage)!= string::npos){
 			CreateGroup(ID, Message);
 		}
@@ -105,6 +107,13 @@ bool Server::ProcessPacket(int ID, Packet _packettype)
 		}
 		if (Message.find(kickMember) != string::npos) {
 			this->kickMember(Message);
+		}
+
+		if (Message.find(SeeInvitation) != string::npos) {
+			this->SeeInvitations(Message);
+		}
+		if (Message.find(JoinGroup) != string::npos) { //nefolosita inca
+			this->AddMemberInGroup(Message);
 		}
 		
 

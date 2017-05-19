@@ -17,7 +17,7 @@ string NotShowingPass(string &pass)
 }
 
 void Client::LogIn()
-{
+{ 
 	std::cout << "Username" << std::endl;
 	string usename;
 	cin >> usename;

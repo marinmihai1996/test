@@ -27,4 +27,12 @@ void Group::kickMember(std::string name)
 			MemberList.erase(MemberList.begin() + i);
 	}
 }
-	
+
+vector<string>Group::GetMemberList() {
+	vector<string> tokens;
+	for (int i = 0; i < this->MemberList.size(); i++) {
+		if(this->MemberList[i]!=NULL)
+		tokens.push_back(this->MemberList[i]->GetUsername());
+	}
+	return  tokens;
+} 

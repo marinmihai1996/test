@@ -59,9 +59,13 @@ void Server::CreateGroup(int ID,std::string Message){
 		vector<string> tokens = split(groupName, '.');
 		string name = tokens.at(0);
 		ofstream OutPut;
+		
 		Account*aux = getAccount(ID); // scriu in fisier owner-ul
-		OutPut.open(groupName, ofstream::binary);
+		OutPut.open(groupName, std::ofstream::out | std::ofstream::app);
 		OutPut << aux->GetUsername();
+		OutPut << "\n";
+		OutPut.close();
+	
 		mem.AddInGroupList(NewGroup);
 		string message = "groupCreated.";
 		message.append(groupName);
@@ -177,39 +181,92 @@ void Server::RestoreMemory()
 
 void Server::InviteClient(string message)
 {
-	std::string IDandGroupName = message.substr(12, std::string::npos);
-	vector<string> tokens = split(IDandGroupName, '.'); // put the strings in a vector -> delimitator='.'
-	string clientName = tokens.at(0);
-	int ID = this->GetIdClient(clientName);
-	string GroupName = tokens.at(1);
-	for (int i = 0; i < IDs; i++)
-	{
-		if (i == ID) //If connection is the user who sent the message...
-		if (!SendString(i,GroupName)) //Send message to connection at index i, if message fails to be sent...
-		{
-			std::cout << "Failed to send message from server to client ID: " << i << std::endl;
+	Memory&mem = Memory::GetInstance();
+	vector<string> tokens = split(message, '.'); // put the strings in a vector -> delimitator='.'
+	string clientName = tokens.at(1);
+	Account *account = mem.getAccount(clientName);
+	int ID = account->GetId();
+	string GroupName = tokens.at(2);
+	
+	string path = "C:/Users/Maria/Documents/git/test/ServerM/Server/";
+	path.append(clientName.c_str());
+	path.append("/");
+	path.append("invitations.txt");
 
-		}
-	}
-	  
+	std::ofstream ofs;
+	ofs.open(path, std::ofstream::out | std::ofstream::app);
+
+	ofs << GroupName;
+	ofs << "\n";
+	ofs.close();
+	
 }
 
+
+void Server::AddMemberInGroup(string message)
+{
+	Memory&mem = Memory::GetInstance();
+	vector<string> tokens = split(message, '.');
+	string group = tokens.at(1);
+	int userID = stoi(tokens.at(2));
+	Group*Group = mem.getGroup(group);
+	Account *account = mem.getAccount(userID);
+	Group->addAccount(account);
+	ofstream OutPut;
+	group.append(".txt");
+	OutPut.open(group, std::ofstream::out | std::ofstream::app); 
+	OutPut << account->GetUsername();
+	OutPut << "\n";
+	OutPut.close();
+
+}
+
+void Server::SeeInvitations(string message)
+{
+	vector<string> tokens = split(message, '.');
+	int UserId = stoi(tokens.at(1));
+	Memory&mem = Memory::GetInstance();
+	Account*acc = mem.getAccount(UserId);
+	string username = acc->GetUsername();
+	string path = "C:/Users/Maria/Documents/git/test/ServerM/Server/";
+	path.append(username);
+	path.append("/invitations.txt");
+	SendString(UserId, path);
+}
 
 
 void Server::GroupChat(std::string Message)
 {
+	Memory&mem = Memory::GetInstance();
 	std::string MessageAndID = Message.substr(6, std::string::npos);
 	vector<string> tokens = split(MessageAndID,'.'); // put the strings in a vector -> delimitator='.'
-	int ID = std::stoi(tokens.at(0));
-	string message = tokens.at(1);
-
-	for (int i = 0; i < IDs; i++)
+	string groupName = tokens.at(0);
+	int ID = std::stoi(tokens.at(1));
+	string message = tokens.at(2);
+	Group*group = mem.getGroup(groupName);
+	vector<string> GroupMemberList = mem.GetMemberList(group);
+	int *IdVector = new int[GroupMemberList.size()];
+	
+	for (int i = 0; i < GroupMemberList.size(); i++)
 	{
-		if (i == ID) //If connection is the user who sent the message...
+		IdVector[i] = mem.GetId(GroupMemberList.at(i));
+	}
+	
+	for (int i = 0; i < GroupMemberList.size(); i++)
+	{
+		if (IdVector[i] == ID) //If connection is the user who sent the message...
 			continue;//Skip to the next user since there is no purpose in sending the message back to the user who sent it.
-		if (!SendString(i, message)) //Send message to connection at index i, if message fails to be sent...
+		string Mes = "chatg.";
+		Mes.append(groupName);
+		Mes.append(".");
+		Mes.append(GroupMemberList.at(i));
+		Mes.append(".");
+		Mes.append(GroupMemberList.at(IdVector[i]));
+		Mes.append(".");
+		Mes.append(message);
+		if (!SendString(IdVector[i], Mes)) //Send message to connection at index i, if message fails to be sent...
 		{
-			std::cout << "Failed to send message from client ID: " << ID << " to client ID: " << i << std::endl;
+			std::cout << "Failed to send message from client ID: " << ID << " to client ID: " << IdVector[i] << std::endl;
 		}
 	}
 }
@@ -255,11 +312,13 @@ void Server::deleteGroup(std::string Message)
 	 {
 		mem.deleteGroup(mem.getGroupNr(message));
 		message.append(".txt");
+		
 		char * writable = new char[message.size() + 1];
 		std::copy(message.begin(), message.end(), writable);
 		writable[message.size()] = '\0'; // don't forget the terminatination
 		remove(writable);
 		delete[] writable;
+		//sa sterg si din Groups.txt
 		}
 	
 }

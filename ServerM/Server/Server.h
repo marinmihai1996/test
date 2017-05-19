@@ -28,16 +28,17 @@ public:
 	void SaveAccount(Account*);
 	void RewriteAccountFile();
 	void RestoreMemory();
-	
+	void SeeInvitations(std::string);
 	
 	
 	Account* getAccount(int ID);
 	int GetIdClient(std::string name);
 	void InviteClient(std::string);
+	void AddMemberInGroup(std::string);
 
 	void GroupChat(std::string);
 	void ConnectToGroup(std::string);
-
+	
 private:
 	void deleteGroup(std::string message);
 	void kickMember(std::string message);

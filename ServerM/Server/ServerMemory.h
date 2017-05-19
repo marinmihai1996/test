@@ -41,7 +41,10 @@ public:
 	
 	int VerifyExistanceAccount(string,string,int);
 	bool ExistsGroup(string);// daca grupul exista sau exista un grup cu acelasi nume
-	
+	vector<string> GetMemberList(Group*);
+
+
+
 	void GoOnline(int ID);
 	void GoOffine(int ID); // nu e implementata inca
 	void ChangeIdForSingUp(int ID);

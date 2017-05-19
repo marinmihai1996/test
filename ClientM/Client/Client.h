@@ -30,12 +30,13 @@ public: //Public functions
 	void ViewMenu3(std::string &);
 
 	void ConnectToGroup(std::string groupName);
-	
+	void ProcessInvitation(std::string);
 
 
 	
 	int ID;
 	bool OKforGroup = false;
+	bool InChat = false;
 
 
 private: //Private functions

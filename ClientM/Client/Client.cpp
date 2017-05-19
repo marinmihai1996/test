@@ -1,5 +1,7 @@
 #include "Client.h"
 #include<conio.h>
+#include<iostream>
+#include<fstream>
 using namespace std;
 #include<vector>
 static vector<string> split(const string &text, char sep) {
@@ -12,9 +14,12 @@ static vector<string> split(const string &text, char sep) {
 	tokens.push_back(text.substr(start));
 	return tokens;
 }
+bool is_emptyy(std::ifstream& pFile)
+{
+	return pFile.peek() == std::ifstream::traits_type::eof();
+}
 
 
-//unsigned int Client::NextID = 0;
 bool Client::ProcessPacket(Packet _packettype)
 {
 	switch (_packettype)
@@ -25,14 +30,12 @@ bool Client::ProcessPacket(Packet _packettype)
 		if (!GetString(Message)) //Get the chat message and store it in variable: Message
 			return false; //If we do not properly get the chat message, return false
 		if (Message.find("Connected") != string::npos) {
-			std::cout << "Welcome to the M&M GroupChat!" << std::endl;
-			//std::cout << "Your ID = " << this->ID << endl;
+			
 			break;
 		}
 		if (Message.find("ID") != string::npos) {
 			vector<string> tokens = split(Message, '.');
 			this->ID = stoi(tokens.at(1));
-			//std::cout << "Your Id is " << this->ID << endl;
 			break;
 		}
 		if (Message.find("You are now online") != string::npos) {
@@ -45,19 +48,75 @@ bool Client::ProcessPacket(Packet _packettype)
 			string groupName = tokens.at(1);
 			std::cout << "The group " << groupName << " is created" << std::endl;
 			fflush(NULL);
-			//this->ViewMenu2();
 			break;
 		}
 		
-		if (Message.find("InGroup") != string::npos) {
+		if (Message.find("InGroup") != string::npos) { 
 			vector<string> tokens = split(Message, '.');
 			string groupName = tokens.at(1);
 			this->OKforGroup = true;
 			fflush(NULL);
-			this->ViewMenu3(groupName);
 			break;
 		}
-		
+
+
+		if (Message.find("invitations.txt") != string::npos) {
+			system("cls");
+			//Sleep(1000);
+			ifstream file(Message);
+			if (is_emptyy(file) || !file)
+			{
+				std::cout<<endl;
+				std::cout << "You don't have any invitations." << std::endl;
+				break;
+			}
+			else
+			{
+				ifstream filee;
+				filee.open(Message);
+				string line;
+				while (std::getline(filee, line))
+				{
+					this->ProcessInvitation(line);
+				}
+				filee.close();
+				// sterg invitatiile din fisier
+				std::ofstream ofs;
+				ofs.open(Message, std::ofstream::out | std::ofstream::trunc);
+				ofs.close();
+
+				break;
+			}
+		}
+
+
+		if (Message.find("chatg") != string::npos) {
+			vector<string> tokens = split(Message, '.');
+			string groupName = tokens.at(1);
+			string source = tokens.at(2);
+			string UserNameDestination = tokens.at(3);
+			string message = tokens.at(4);
+			if (this->InChat == true)
+			{
+				std::cout << source << ":" << message << std::endl;
+				break;
+			}
+			else {
+				string path = "C:/Users/Maria/Documents/git/test/ServerM/Server/";
+				path.append(UserNameDestination);
+				path.append("/");
+				path.append(groupName);
+				path.append(".txt");
+				ofstream OutPut;
+				OutPut.open(path, std::ofstream::out | std::ofstream::app);
+				OutPut << source;
+				OutPut << ":";
+				OutPut << message;
+				OutPut << "\n";
+				OutPut.close();
+				break;
+			}
+		}
 		system("cls");
 		std::cout << Message << std::endl; //Display the message to the user
 		Sleep(1000);
