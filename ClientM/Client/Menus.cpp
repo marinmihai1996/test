@@ -111,7 +111,9 @@ et3:
 		std::string username;
 		std::cout << "Insert client name" << std::endl;
 		std::cin >> username;
-	std:string aux = "inviteclient";
+     	std:string aux = "inviteclient";
+		aux.append(".");
+		aux.append(std::to_string(this->ID));
 		aux.append(".");
 		aux.append(username);
 		aux.append(".");

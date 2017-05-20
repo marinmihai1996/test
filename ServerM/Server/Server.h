@@ -9,8 +9,9 @@
 #include"Group.h"
 #include"Account.h"
 #include"ServerMemory.h"
+#include "Member.h"
 using namespace std;
-
+class Account;
 enum Packet
 {
 	P_ChatMessage
@@ -29,8 +30,8 @@ public:
 	void RewriteAccountFile();
 	void RestoreMemory();
 	void SeeInvitations(std::string);
-	
-	
+	void MakeAdmin(std::string nume);
+	void DowngradeAdmin(std::string nume);
 	Account* getAccount(int ID);
 	int GetIdClient(std::string name);
 	void InviteClient(std::string);

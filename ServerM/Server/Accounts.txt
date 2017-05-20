@@ -1,3 +1,3 @@
-maria qaz 0
+maria qaz 2
 casi qaz 1
-dia qaz 2
+dia qaz 0

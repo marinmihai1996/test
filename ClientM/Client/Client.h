@@ -32,7 +32,7 @@ public: //Public functions
 	void ConnectToGroup(std::string groupName);
 	void ProcessInvitation(std::string);
 
-
+	void RestoreOfflineMessages(std::string groupName);
 	
 	int ID;
 	bool OKforGroup = false;
@@ -44,7 +44,7 @@ private: //Private functions
 	statut Statut;
 	void setStatus(statut a) { Statut = a; }
 	statut getStatut() { return Statut; }
-	
+	std::string FolderPath;
 	bool ProcessPacket(Packet _packettype);
 	static void ClientThread();
 	//Sending Funcs
@@ -72,4 +72,4 @@ private:
 	bool OkSingUp = false;
 };
 
-static Client * clientptr; //This client ptr is necessary so that the ClientThread method can access the Client instance/methods. Since the ClientThread method is static, this is the simplest workaround I could think of since there will only be one instance of the client.
+static Client * clientptr; //This

@@ -3,6 +3,9 @@
 #include<iostream>
 #include<conio.h>
 #include<vector>
+#include<fstream>
+bool is_emptyy(std::ifstream& pFile);
+
 void Client::CreateGroup(std::string groupName)
 {
 	std::string CreateGroupMessage = "creategroup";
@@ -33,9 +36,12 @@ void Client::ConnectToGroup(std::string groupName) {
 
 void Client::ChatGroup(std::string groupName)
 {
+
+	std::cout << "Type exit to stop chat" << std::endl;
+	this->RestoreOfflineMessages(groupName);
 	char message[256];
 	int tryy = 0;
-	std::cout << "Type exit to stop chat" << std::endl;
+	
 	while (true)
 	{
 		std::string ChatMessage = "chatg";
@@ -101,3 +107,28 @@ void Client::ProcessInvitation(std::string group)
 		}
 	}
 }
+void Client::RestoreOfflineMessages(std::string groupName) {
+	std::string path;
+	path = this->FolderPath;
+	//path.append("/");
+	path.append(groupName);
+	path.append(".txt");
+	std::ifstream file(path);
+	if (is_emptyy(file) || !file) return;
+	else {
+		std::ifstream filee;
+		filee.open(path);
+		std::string line;
+		while (std::getline(filee, line))
+		{
+			std::cout << line << std::endl;
+		}
+		filee.close();
+		std::ofstream ofs;
+		ofs.open(path, std::ofstream::out | std::ofstream::trunc);
+		ofs.close();
+	}
+
+}
+
+

@@ -8,7 +8,8 @@
 #include"Server.h"
 using namespace std;
 
-
+class Account;
+class Group;
 class Memory
 {
 private:

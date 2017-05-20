@@ -21,6 +21,10 @@ void Client::LogIn()
 	std::cout << "Username" << std::endl;
 	string usename;
 	cin >> usename;
+	string path = "C:/Users/Maria/Documents/git/test/ServerM/Server/";
+	path.append(usename);
+	path.append("/");
+	this->FolderPath = path;
 	std::cout << "Password" << std::endl;
 	string pass;
 	NotShowingPass(pass);
@@ -42,9 +46,6 @@ void Client::LogIn()
 
 	}
 	else this->ViewMenu1();
-	//system("pause");
-	
-	//this->ViewMenu1();
 }
 
 void Client::SingUp()
@@ -73,8 +74,15 @@ void Client::SingUp()
 		ok = true;
 	}
 	string aux="createAccount";
-	
 	aux.append(username);
+
+
+	string path = "C:/Users/Maria/Documents/git/test/ServerM/Server/";
+	path.append(username);
+	path.append("/");
+	this->FolderPath = path;
+
+
 	aux.append(".");
 	pass.append(".");
     pass.append(std::to_string(this->ID)); 

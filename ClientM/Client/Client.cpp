@@ -14,7 +14,7 @@ static vector<string> split(const string &text, char sep) {
 	tokens.push_back(text.substr(start));
 	return tokens;
 }
-bool is_emptyy(std::ifstream& pFile)
+bool is_emptyy(std::ifstream& pFile)	
 {
 	return pFile.peek() == std::ifstream::traits_type::eof();
 }

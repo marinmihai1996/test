@@ -83,6 +83,18 @@ bool Server::ProcessPacket(int ID, Packet _packettype)
 		std::string kickMember = "kick";
 		std::string JoinGroup = "joingroup";
 		std::string SeeInvitation = "seeinvitation";
+		
+		std::string Makeadmin = "makeadmin";
+		std::string Downgradeadmin = "downgrade";
+
+
+
+		if (Message.find(Makeadmin)!=string::npos){
+			this->MakeAdmin(Message);
+		}
+		if (Message.find(Downgradeadmin) != string::npos) {
+			this->DowngradeAdmin(Message);
+		}
 		if (Message.find(CreateGroupMessage)!= string::npos){
 			CreateGroup(ID, Message);
 		}
@@ -155,10 +167,3 @@ if (!serverptr->ProcessPacket(ID, PacketType)) //Process packet (packet type)
 	closesocket(serverptr->Connections[ID]);
 }
 
-
-void Server::ViewAccountsList()
-{
-	std::cout << " The Accounts are: " << std::endl;
-	Memory& mem = Memory::GetInstance();
-	mem.ViewAccountsList();
-} 

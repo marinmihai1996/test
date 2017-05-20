@@ -1,7 +1,8 @@
 #pragma once
+#include "Member.h"
 #include<string>
 using namespace std;
-
+class Member;
 enum Status {
 	Online,
 	Offline
@@ -13,11 +14,10 @@ private:
 	string password;
 	int ID;
 	Status stat;
+	
 
 public:
-
-	virtual bool deleteGroup() { return true; };
-	virtual bool kickMember() { return true; };
+	Member *Rights;
 	string GetUsername() { return this->username; };
 	string GetPassword() { return this->password; };
 	int GetId() { return this->ID; };
