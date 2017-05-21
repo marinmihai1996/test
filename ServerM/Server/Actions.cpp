@@ -13,11 +13,51 @@
 using namespace std;
 ofstream write;
 
+
+
+bool is_emptyy(std::ifstream& pFile);
+
 void CreateDirectory(string name)
 {
 	string path = "C:/Users/Maria/Documents/git/test/ServerM/Server/";
 	path.append(name);
 	_mkdir(path.c_str());
+}
+void deleteFile(string FileName)
+{
+	char * writable = new char[FileName.size() + 1];
+	std::copy(FileName.begin(), FileName.end(), writable);
+	writable[FileName.size()] = '\0'; // don't forget the terminatination
+	remove(writable);
+	delete[] writable;
+}
+bool deleteFromFile(string name, string FileName) {
+	bool exist = false;
+	vector<string> BackUpVector;
+	string file = FileName.append(".txt");
+	string line;
+	ifstream InFile(file);
+	if (InFile.good()) {
+		while (getline(InFile, line)) {
+			if (line == name||line.find(name)!=string::npos) exist = true;
+			else  BackUpVector.push_back(line);
+		}
+	}
+	if (exist == true)
+	{
+		InFile.close();
+		std::ofstream ofs;
+		ofs.open(file, std::ofstream::out | std::ofstream::trunc);
+		ofs.close();
+
+		ofstream OutPut;
+		OutPut.open(file, std::ofstream::out | std::ofstream::app);
+		for (int i = 0; i < BackUpVector.size(); i++) {
+			OutPut << BackUpVector[i];
+			OutPut << "\n";
+		}
+	}
+	return exist;
 }
 
 static vector<string> split(const string &text, char sep) {
@@ -178,7 +218,7 @@ void Server::RestoreMemory()
 {
 	Memory& mem = Memory::GetInstance();
 	mem.RestoreAccountList();
-	mem.RestoreGroupsList(); //de facut asta
+	mem.RestoreGroupsList(); 
 }
 
 
@@ -188,28 +228,77 @@ void Server::InviteClient(string message)
 	vector<string> tokens = split(message, '.'); // put the strings in a vector -> delimitator='.'
 	int ID = stoi(tokens.at(1));
 	string clientName = tokens.at(2);
-	if (mem.getAccount(ID)->Rights->InviteClient())
-	{
 	Account *account = mem.getAccount(clientName);
-
-	
-		int ID = account->GetId();
-		string GroupName = tokens.at(2);
-
-		string path = "C:/Users/Maria/Documents/git/test/ServerM/Server/";
-		path.append(clientName.c_str());
-		path.append("/");
-		path.append("invitations.txt");
-
-		std::ofstream ofs;
-		ofs.open(path, std::ofstream::out | std::ofstream::app);
-
-		ofs << GroupName;
-		ofs << "\n";
-		ofs.close();
+	if (account == NULL) {
+		string errorMessage = "This user do not exists!!\n";
+		SendString(ID, errorMessage);
+		return;
 	}
-}
+	string GroupName = tokens.at(3);
+	Group*group = mem.getGroup(GroupName);
+	if (group->ExistMember(account) == true) {
+		string errorMessage = "This is already a member\n";
+		SendString(ID, errorMessage);
+		return;
+	}
+	string path = "C:/Users/Maria/Documents/git/test/ServerM/Server/";
+	path.append(clientName.c_str());
+	path.append("/");
+	path.append("invitations.txt");
+	ifstream myfile(path);
+	string line;
+	if (myfile)
+	{
+		if (myfile.good() && !is_emptyy(myfile)) {
+			while (getline(myfile, line)) {
+				if (line == GroupName)
+				{
+					string errorMessage = "This member is already invited\n";
+					SendString(ID, errorMessage);
+					break;
+				}
+			}
 
+			myfile.close();
+			return;
+		}
+	}
+	std::ofstream ofs;
+	ofs.open(path, std::ofstream::out | std::ofstream::app);
+	ofs << GroupName;
+	ofs << "\n";
+	ofs.close();
+}
+void Server::QuickAdd(string message) {
+	Memory&mem = Memory::GetInstance();
+	vector<string> tokens = split(message, '.');
+	int ID = stoi(tokens.at(1));
+	string groupName = tokens.at(2);
+	string userName = tokens.at(3);
+	Account*account = mem.getAccount(userName);
+	if (account == NULL) {
+		string errorMessage = "This user do not exists!!\n";
+		SendString(ID, errorMessage);
+		return;
+	}
+	Group*group = mem.getGroup(groupName);
+	if (group->ExistMember(account) == true) {
+		string errorMessage = "This is already a member\n";
+		SendString(ID, errorMessage);
+		return;
+	}
+	group->addAccount(account);
+	string path = "C:/Users/Maria/Documents/git/test/ServerM/Server/";
+	path.append(groupName);
+	path.append(".txt");
+	std::ofstream ofs;
+	ofs.open(path, std::ofstream::out | std::ofstream::app);
+	ofs << userName;
+	ofs << "\n";
+	ofs.close();
+
+
+}
 
 
 void Server::AddMemberInGroup(string message)
@@ -220,6 +309,11 @@ void Server::AddMemberInGroup(string message)
 	int userID = stoi(tokens.at(2));
 	Group*Group = mem.getGroup(group);
 	Account *account = mem.getAccount(userID);
+	if (account == NULL) {
+		string errorMessage = "This user do not exists!!\n";
+		SendString(userID, errorMessage);
+		return;
+	}
 	Group->addAccount(account);
 	ofstream OutPut;
 	group.append(".txt");
@@ -242,7 +336,56 @@ void Server::SeeInvitations(string message)
 	path.append("/invitations.txt");
 	SendString(UserId, path);
 }
+void Server::PrivateChat(string Message) {
 
+	Memory&mem = Memory::GetInstance();
+	vector<string> tokens = split(Message, '.');
+	string groupName = tokens.at(1);
+	Group*group = mem.getGroup(groupName);
+	int ID = std::stoi(tokens.at(2));
+	string UserToRecive=tokens.at(3);
+	string message = tokens.at(4);
+	Account*UserDestinaton = mem.getAccount(UserToRecive);
+	if (UserDestinaton == NULL)
+	{
+		string message = "This user do not exists\n";
+		SendString(ID, message);
+		return;
+	}
+	if (group->ExistMember(UserDestinaton) == false)
+	{
+		string message = "This user is not in the group\n";
+		SendString(ID, message);
+		return;
+	}
+	Account*Sender = mem.getAccount(ID);
+	string mes = "private.";
+	mes.append(groupName);
+	mes.append(".");
+	mes.append(Sender->GetUsername());
+	mes.append(".");
+	mes.append(UserDestinaton->GetUsername());
+	mes.append(".");
+	mes.append(message);
+	if (!SendString(UserDestinaton->GetId(), mes)) //Send message to connection at index i, if message fails to be sent...
+	{
+		string path = "C:/Users/Maria/Documents/git/test/ServerM/Server/";
+		path.append(UserDestinaton->GetUsername());
+		path.append("/");
+		path.append(groupName);
+		path.append(".private.txt");
+		ofstream OutPut;
+		OutPut.open(path, std::ofstream::out | std::ofstream::app);
+		OutPut << Sender->GetUsername();
+		OutPut << ":";
+		OutPut << message;
+		OutPut << "\n";
+		OutPut.close();
+		std::cout << "The user " << UserDestinaton->GetUsername() << "is offline. Gonna see the messages when logs in" << std::endl;
+		
+	}
+
+}
 
 void Server::GroupChat(std::string Message)
 {
@@ -299,28 +442,64 @@ void Server::GroupChat(std::string Message)
 }
 
 void Server::ConnectToGroup(std::string Message) {
-	
+
 	std::string groupNameAndID = Message.substr(7, std::string::npos);
 	Memory& mem = Memory::GetInstance();
-	vector<string> tokens = split(groupNameAndID,'.');
+	vector<string> tokens = split(groupNameAndID, '.');
 	string groupName = tokens.at(0);
 	int userID = stoi(tokens.at(1));
 	Account*user = mem.getAccount(userID);
-
+	Group*group = mem.getGroup(groupName);
+	if (group == NULL) {
+		string message = "This group do not exists!\n";
+		SendString(userID, message);
+		return;
+	}
+	mem.RestoreAdminList(group);
 	std::ifstream file;
 	string path = "C:/Users/Maria/Documents/git/test/ServerM/Server/";
 	path.append(groupName);
 	path.append(".txt");
 
 	file.open(path, std::ifstream::in);
-	string OwnerName;
-	std::getline(file, OwnerName);
+	string FirstLine;
+	std::getline(file, FirstLine);
+	vector<string> tokenss = split(FirstLine, '.');
+	string OwnerName = tokenss.at(0);
+	// aici o sa verific si cu vectorul de admini
+	string AdminPath = "C:/Users/Maria/Documents/git/test/ServerM/Server/";
+	AdminPath.append(groupName);
+	AdminPath.append(".adminList.txt");
+	ifstream File(AdminPath);
 
 	if (OwnerName.compare(user->GetUsername()) == 0)
-		user->Rights = new Owner;
+	{
+		//user->Rights.MakeOwner();
+		string message = "statut.owner";
+		SendString(userID, message);
+
+	}
+	else if(File){
+		if (!is_emptyy(File)) {
+			ifstream filee;
+			filee.open(AdminPath);
+			string line;
+			while (std::getline(filee, line))
+			{
+				if (line == user->GetUsername()) {
+					string message = "statut.admin";
+					SendString(userID, message);
+				}
+			}
+		}
+	}
 	else
-		user->Rights = new Member;
-	
+	{
+		//user->Rights.OnlyMember();
+		string message = "statut.member";
+		SendString(userID, message);
+	}
+
 	//verific daca grupul exista
 	if (mem.ExistsGroup(groupName) == true) {
 		Group *group = mem.getGroup(groupName);
@@ -344,136 +523,216 @@ void Server::ConnectToGroup(std::string Message) {
 
 void Server::deleteGroup(std::string Message)
  {
-	//Message= deletgroup.id.numegrup.
-	std::string MessageAndID = Message.substr(10, std::string::npos);
-	vector<string> tokens = split(MessageAndID, '.');
-	
-		int ID = std::stoi(tokens.at(0));
-	string message = tokens.at(1);
+	//Message= deletgroup.ID.numegrup
+	//std::string MessageAndID = Message.substr(10, std::string::npos);
+	vector<string> tokens = split(Message, '.');
+	int userID = stoi(tokens.at(1));
+	string groupName = tokens.at(2);
 	Memory&mem = Memory::GetInstance();
-	if (mem.getAccount(ID)->Rights->deleteGroup())
-	 {
-		mem.deleteGroup(mem.getGroupNr(message));
-		message.append(".txt");
-		
-		char * writable = new char[message.size() + 1];
-		std::copy(message.begin(), message.end(), writable);
-		writable[message.size()] = '\0'; // don't forget the terminatination
-		remove(writable);
-		delete[] writable;
-		//sa sterg si din Groups.txt
-		}
-	else
-	{
-		string message = "You don't have the rights to do this";
-		SendString(ID, message);
+	Group*Group = mem.getGroup(groupName);
+	if (Group == NULL) {
+		string message = "This group do not exists!";
+		SendString(userID, message);
+		return;
+	}
+	mem.deleteGroup(Group);
+	string fileName = "Groups";
+	deleteFromFile(groupName,fileName);
+	string groupFile = groupName.append(".txt");
+	string groupAdminFile = groupName.append(".adminList.txt");
+	deleteFile(groupFile);
+	deleteFile(groupAdminFile);
+	
 	}
 	
-}
+	
 
-void Server:: kickMember(std::string Message)
- {
-	//Message= kickmember.id.numegrup.numemembrupentrukick
-	std::string MessageAndID = Message.substr(10, std::string::npos);
+
+void Server::kickMember(std::string Message)
+{
+	//Message= kickmember.id.numegrup.numemembrupentrukick.kick 
+	Memory&mem = Memory::GetInstance();
+	std::string MessageAndID = Message.substr(11, std::string::npos);
 	vector<string> tokens = split(MessageAndID, '.');
-		int ID = std::stoi(tokens.at(0));
+	string option = tokens.at(3);
+	string numeMembru;
+	int ID = std::stoi(tokens.at(0));
 	string numeGrup = tokens.at(1);
-	string numeMembru = tokens.at(2);
-	Memory&mem = Memory::GetInstance();	
-		if (mem.getAccount(ID)->Rights->kickMember())
-		 mem.getGroup(numeGrup)->kickMember(numeMembru);
-		else
+	Account*a = mem.getAccount(ID);
+	if (option == "kick")
+	{
+	   numeMembru = tokens.at(2);
+	}
+	else numeMembru = a->GetUsername();
+
+	Group*group = mem.getGroup(numeGrup);
+	if (option == "leave") goto et;
+	// sa mai fac si daca e owner si vrea sa plece!!! 
+	if (numeMembru == group->GetGroupOwnerName()) {
+		string message = "That is the owner of the group.You don't have the rights to do this";
+		SendString(ID, message);
+		return;
+	}
+	if (a->GetUsername() == numeMembru) {
+		string message = "That is you! :)";
+		SendString(ID, message);
+		return;
+	}
+et:
+	if (group->kickMember(numeMembru) == true)
+	{
+		deleteFromFile(numeMembru, numeGrup);
+		if (group->kickAdmin(numeMembru) == true)
 		{
-			string message = "You don't have the rights to do this";
-			SendString(ID, message);
+			string adminFile = ".adminList";
+			numeGrup.append(adminFile);
+			deleteFromFile(numeMembru, numeGrup);
+
 		}
+	}
 }
+	
+
 
 
 void Server::MakeAdmin(std::string Message)
 {
 	///makeadmin.id.numegrup.numemembru
 
-	std::string MessageAndID = Message.substr(9, std::string::npos);
+	std::string MessageAndID = Message.substr(10, std::string::npos);
 	vector<string> tokens = split(MessageAndID, '.');
 	int ID = std::stoi(tokens.at(0));
 	string numeGrup = tokens.at(1);
 	string numeMembru = tokens.at(2);
 
 	Memory&mem = Memory::GetInstance();
-	if (mem.getAccount(ID)->Rights->DowngradeAdmin())
-	{
-		if (mem.getGroup(numeGrup)->ExistMember(mem.getAccount(numeMembru)))
-		{
-			if (mem.getAccount(numeMembru)->Rights->getstatut() == "admin")
-			{
-				free(mem.getAccount(ID)->Rights);
-				mem.getAccount(numeMembru)->Rights = new Admin;
+				Group*group = mem.getGroup(numeGrup);
+				Account *account = mem.getAccount(numeMembru, numeGrup);
+				if (account == NULL) {
+					string errorMessage = "This user do not exists!!\n";
+					SendString(ID, errorMessage);
+					return;
+				}
+				if (numeMembru == group->GetGroupOwnerName()) {
+					string errorMessage = "This is the owner of the group\n";
+					SendString(ID, errorMessage);
+					return;
+				}
+				if (group->ExistAdmin(account) == true) {
+					string errorMessage = "This is already an admin\n";
+					SendString(ID, errorMessage);
+					return;
+				}
+				string stat = "statut.admin";
+				int id = account->GetId();
+				mem.AddAdmin(group, account);
+				SendString(id, stat);
+				std::string name = ".adminList";
+				numeGrup.append(name);
+				numeGrup.append(".txt");
 
-			}
-			else
-			{
-				string message = "This member is allready administrator";
-				SendString(ID, message);
-			}
-		}
-		else
-		{
-			string message = "The accout is not a member  of this group";
-			SendString(ID, message);
-		}
-	}
-	else
-	{
-		string message = "You don't have the rights to do this";
-		SendString(ID, message);
-	}
+				ofstream OutPut;
+				
+				OutPut.open(numeGrup, std::ofstream::out | std::ofstream::app);
+				OutPut << account->GetUsername();
+				OutPut << "\n";
+				OutPut.close();
 
 }
-
+		
 void Server::DowngradeAdmin(std::string Message)
 {
 	///downgradeadmin.id.numegrup.numeadmin
 
-	std::string MessageAndID = Message.substr(14, std::string::npos);
+	std::string MessageAndID = Message.substr(15, std::string::npos);
 	vector<string> tokens = split(MessageAndID, '.');
 	int ID = std::stoi(tokens.at(0));
 	string numeGrup = tokens.at(1);
 	string numeMembru = tokens.at(2);
 	Memory&mem = Memory::GetInstance();
-	if (mem.getAccount(ID)->Rights->DowngradeAdmin())
-	{
-		if (mem.getGroup(numeGrup)->ExistMember(mem.getAccount(numeMembru)))
-		{
-			if (mem.getAccount(numeMembru)->Rights->getstatut() == "admin")
-			{
-				Memory&mem = Memory::GetInstance();
-				free(mem.getAccount(ID)->Rights);
-				mem.getAccount(numeMembru)->Rights = new Member;
-			}
-			else
-			{
-				string message = "This member is not an administrator";
-				SendString(ID, message);
-			}
-		}
-		else
-		{
-			string message = "The accout is not a member  of this group";
-			SendString(ID, message);
-		}
-	}
-	else
-	{
-		string message = "You don't have the rights to do this";
+	Account*a = mem.getAccount(numeMembru);
+	if (a == NULL) {
+		string message = "The accout do not exists";
 		SendString(ID, message);
+		return;
 	}
+	Group*group = mem.getGroup(numeGrup);
+	if (group->ExistMember(a)==false)
+	{
+		string message = "The accout is not a member  of this group";
+		SendString(ID, message);
+		return;
+	}
+	if (group->ExistAdmin(a) == false)
+	{
+		string message = "The accout is not an admin of this group";
+		SendString(ID, message);
+		return;
+	}
+	group->kickAdmin(numeMembru);
+	string file = ".adminList";
+	numeGrup.append(file);
+	deleteFromFile(numeMembru, numeGrup);
+	string s = "Admin downgraded!!\n";
+	SendString(ID, s);
+	
 }
 	
 
+
+void Server::SeeMemberList(std::string message)
+{
+	Memory& mem = Memory::GetInstance();
+	vector<string> MemberList;
+	vector<string> tokens = split(message, '.'); // put the strings in a vector -> delimitator='.'
+	string groupName = tokens.at(1);
+	int ID = stoi(tokens.at(2));
+	
+	MemberList = mem.GetMemberList(groupName);
+	string Message = "members";
+	for (int i = 0; i < MemberList.size(); i++) {
+		Message.append(".");
+		Message.append(MemberList.at(i));
+	}
+	SendString(ID, Message);	
+}
+void Server::SeeAdminList(std::string message)
+{
+	Memory& mem = Memory::GetInstance();
+	vector<string> AdminList;
+	vector<string> tokens = split(message, '.'); // put the strings in a vector -> delimitator='.'
+	string groupName = tokens.at(1);
+	int ID = stoi(tokens.at(2));
+
+	AdminList = mem.GetAdminList(groupName);
+	string Message = "admins";
+	for (int i = 0; i < AdminList.size(); i++) {
+		Message.append(".");
+		Message.append(AdminList.at(i));
+	}
+	SendString(ID, Message);
+}
+void Server::SeeGroupList(std::string message) {
+	Memory& mem = Memory::GetInstance();
+	vector<string> GroupList;
+	vector<string> tokens = split(message, '.');
+	int ID = stoi(tokens.at(1));
+	Account*a = mem.getAccount(ID);
+	GroupList = mem.GetGroupList(a);
+	string Message = "groupList";
+	for (int i = 0; i < GroupList.size(); i++) {
+		Message.append(".");
+		Message.append(GroupList[i]);
+	}
+	SendString(ID, Message);
+
+}
+
+
+
 void Server::ViewAccountsList()
 {
-	std::cout << " The Accounts are: " << std::endl;
+	//std::cout << " The Accounts are: " << std::endl;
 	Memory& mem = Memory::GetInstance();
 	mem.ViewAccountsList();
 }

@@ -16,8 +16,9 @@ private:
 	Status stat;
 	
 
+
 public:
-	Member *Rights;
+	Member Rights;
 	string GetUsername() { return this->username; };
 	string GetPassword() { return this->password; };
 	int GetId() { return this->ID; };

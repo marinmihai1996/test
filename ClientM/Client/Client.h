@@ -31,8 +31,9 @@ public: //Public functions
 
 	void ConnectToGroup(std::string groupName);
 	void ProcessInvitation(std::string);
-
-	void RestoreOfflineMessages(std::string groupName);
+	void SeeMemeberList(std::string);
+	void SeeAdminList(std::string);
+	void RestoreOfflineMessages(std::string groupName,std::string Case,std::string UserName);
 	
 	int ID;
 	bool OKforGroup = false;
@@ -60,8 +61,8 @@ private: //Private functions
 	bool GetString(std::string & _string);
 	
 	void ChatGroup(std::string);
+	void PrivateChat(std::string, std::string);
 	void LogIn();
-	//virtual void DeleteGroup(); //just for ClientOwner
 	void SingUp();
 
 

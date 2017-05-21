@@ -11,3 +11,7 @@ Member::Member()
 Member::~Member()
 {
 }
+bool Member:: OnlyMember() {
+	this->SetStatut("normal");
+	return true;
+}

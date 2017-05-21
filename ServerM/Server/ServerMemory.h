@@ -34,16 +34,23 @@ public:
 	void RestoreAccountList();
 	void RestoreGroupsList();  
 	void RestoreGroupAccountsList(Group*);
-	
+	void RestoreAdminList(Group*);
+
+
+
 	Account* getAccount(int ID);
 	Account* getAccount(string name);
+	Account*getAccount(string accountName, string groupName);
 	Group* getGroup(string name);
 	int GetId(std::string name);
+	void AddAdmin(Group*, Account*);
 	
 	int VerifyExistanceAccount(string,string,int);
-	bool ExistsGroup(string);// daca grupul exista sau exista un grup cu acelasi nume
+	bool ExistsGroup(string);
 	vector<string> GetMemberList(Group*);
-
+	vector<string> GetMemberList(std::string groupName);
+	vector<string> GetAdminList(std::string groupName);
+	vector<string> GetGroupList(Account*);
 
 
 	void GoOnline(int ID);
@@ -52,7 +59,9 @@ public:
 	void CleanAccountFile();
 	void ChangeIdForLogIn(int ID,string username);
 
-	void deleteGroup(int a);
+	void deleteGroup(Group*);
 	int getGroupNr(std::string name);
+
+	bool VerifyAdminStatus(Account*, Group*);
 	
 };  

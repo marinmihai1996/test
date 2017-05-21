@@ -4,6 +4,11 @@
 #include<vector>
 
 
+bool is_emptyy(std::ifstream& pFile)
+{
+	return pFile.peek() == std::ifstream::traits_type::eof();
+}
+
 static vector<string> split(const string &text, char sep) {
 	vector<string> tokens;
 	size_t start = 0, end = 0;
@@ -119,7 +124,23 @@ void Memory::RestoreAccountList() {
 	else cout << "Unable to open file";
 };
 
+void Memory::RestoreAdminList(Group*group){
+	string name = group->GetGroupName();
+	name.append(".adminList.txt");
+	ifstream file(name);
+	if (is_emptyy(file) || !file) return;
+	ifstream filee;
+	filee.open(name);
+	string line;
+	while (std::getline(filee, line))
+	{
+		Account *a = this->getAccount(line);
+		
+		this->AddAdmin(group, a);
+	}
+	
 
+}
 void Memory::RestoreGroupsList() {
 	
 		LogGroups& Log = LogGroups::GetInstance();
@@ -132,6 +153,7 @@ void Memory::RestoreGroupsList() {
 				string ownerName = tokens.at(1);
 				Group*group = new Group(groupName,ownerName);
 				this->AddInGroupList(group);
+				
 			}
 			myfile.close();
 		}
@@ -231,9 +253,17 @@ void Memory::GoOnline(int ID)
 }
 
 
-void Memory::deleteGroup(int i)
+void Memory::deleteGroup(Group*a)
 {
-	GroupList.erase(GroupList.begin() + i);
+	for (int i = 0; i < GroupList.size(); i++)
+	{
+		if (a->GetGroupName() == GroupList[i]->GetGroupName())
+		{
+			GroupList.erase(GroupList.begin() + i);
+			return;
+		}
+	}
+	
 }
 
 
@@ -253,4 +283,68 @@ vector<string> Memory::GetMemberList(Group*group) {
 		}
 	}
 	return tokens;
+}
+
+vector<string> Memory::GetMemberList(std::string groupName) {
+	vector<string> tokens;
+	for (int i = 0; i < GroupList.size(); i++)
+	{
+		if (GroupList[i]->GetGroupName() == groupName) {
+			tokens = GroupList[i]->GetMemberList();
+		}
+	}
+	return tokens;
+}
+
+vector<string> Memory::GetAdminList(std::string groupName) {
+	vector<string> tokens;
+	for (int i = 0; i < GroupList.size(); i++)
+	{
+		if (GroupList[i]->GetGroupName() == groupName) {
+			tokens = GroupList[i]->GetAdminList();
+		}
+	}
+	return tokens;
+}
+
+Account*Memory::getAccount(string accountName, string groupName) {
+
+
+	for (int i = 0; i < GroupList.size(); i++) {
+		if (GroupList[i]->GetGroupName() == groupName) {
+			Account*a = GroupList[i]->getAccount(accountName);
+			return a;
+		}
+	}
+}
+
+void Memory::AddAdmin(Group*group, Account *a)
+{
+	for (int i = 0; i < GroupList.size(); i++) {
+		if (group->GetGroupName() == GroupList[i]->GetGroupName()) {
+			GroupList[i]->addAdmin(a);
+			return;
+		}
+	}
+}
+
+bool Memory::VerifyAdminStatus(Account*a, Group*g) {
+	for (int i = 0; i < GroupList.size(); i++) {
+		if (GroupList[i]->GetGroupName() == g->GetGroupName()) {
+			if (GroupList[i]->ExistAdmin(a) == true) return true;
+			else return false;
+		}
+	}
+}
+
+vector<string> Memory::GetGroupList(Account*a) {
+	
+	vector<string>tokens;
+	for (int i = 0; i < GroupList.size(); i++) {
+		if (GroupList[i]->ExistMember(a) == true) {
+			tokens.push_back(GroupList[i]->GetGroupName());
+		}
+	}
+	return tokens;
+ 
 }

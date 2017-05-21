@@ -77,16 +77,20 @@ bool Server::ProcessPacket(int ID, Packet _packettype)
 		std::string singUp = "createAccount";
     	std:string LogIn = "login";
 		std::string Invitation = "inviteclient";
+		std::string QuickAdd = "quickadd";
 		std::string ChatGroup = "chatg";
+		std::string PrivateChat = "private";
 		std::string AccesGroup = "access";
 		std::string deleteGroup = "deleteGroup";
 		std::string kickMember = "kick";
 		std::string JoinGroup = "joingroup";
 		std::string SeeInvitation = "seeinvitation";
-		
+		std::string SeeMemberList = "seememberlist";
+		std::string SeeAdminList = "seeadminlist";
+		std::string SeeGroupList = "seegrouplist";
 		std::string Makeadmin = "makeadmin";
 		std::string Downgradeadmin = "downgrade";
-
+	
 
 
 		if (Message.find(Makeadmin)!=string::npos){
@@ -107,8 +111,14 @@ bool Server::ProcessPacket(int ID, Packet _packettype)
 		if (Message.find(Invitation) != string::npos) {
 			this->InviteClient(Message);
 		}
+		if (Message.find(QuickAdd) != string::npos) {
+			this->QuickAdd(Message);
+		}
 		if (Message.find(ChatGroup) != string::npos) {
 			this->GroupChat(Message);
+		}
+		if (Message.find(PrivateChat) != string::npos) {
+			this->PrivateChat(Message);
 		}
 		if (Message.find(AccesGroup) != string::npos) {
 			this->ConnectToGroup(Message);
@@ -127,18 +137,15 @@ bool Server::ProcessPacket(int ID, Packet _packettype)
 		if (Message.find(JoinGroup) != string::npos) { //nefolosita inca
 			this->AddMemberInGroup(Message);
 		}
-		
-
-		//broadcast message or private message
-		/*for (int i = 0; i < IDs ;i++)
-		{
-			if (i == ID) //If connection is the user who sent the message...
-				continue;//Skip to the next user since there is no purpose in sending the message back to the user who sent it.
-			if (!SendString(i, Message)) //Send message to connection at index i, if message fails to be sent...
-			{
-				std::cout << "Failed to send message from client ID: " << ID << " to client ID: " << i << std::endl;
-			}
-		}*/
+		if (Message.find(SeeMemberList) != string::npos) {
+			this->SeeMemberList(Message);
+		}
+		if (Message.find(SeeAdminList) != string::npos) {
+			this->SeeAdminList(Message);
+		}
+		if (Message.find(SeeGroupList) != string::npos) {
+			this->SeeGroupList(Message);
+		}
 
 		std::cout << "Processed chat message packet from user  " << ID << std::endl;
 		break;

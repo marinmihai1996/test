@@ -58,8 +58,40 @@ bool Client::ProcessPacket(Packet _packettype)
 			fflush(NULL);
 			break;
 		}
+		if (Message.find("statut") != string::npos) {
+			vector<string> tokens = split(Message, '.');
+			if (tokens.at(1) == "owner")
+				this->Statut = owner;
+			else if (tokens.at(1) == "admin") this->Statut = admin;
+			else this->Statut = normal;
+			break;
+		}
+		if (Message.find("members") != string::npos) {
+			vector<string> tokens = split(Message, '.');
+			std::cout << "The members are: " << std::endl;
+			for (int i = 1; i < tokens.size(); i++) {
+				std::cout << tokens[i];
+				std::cout << " ";
+			}
+			std::cout << endl;
+			
+			break;
+		}
+		if (Message.find("admins") != string::npos) {
+			vector<string> tokens = split(Message, '.');
+			if (tokens.size() == 1) {
+				std::cout << "This group do not has admins " << std::endl;
+				break;
+			}
+			std::cout << "The admins are: " << std::endl;
+			for (int i = 1; i < tokens.size(); i++) {
+				std::cout << tokens[i];
+				std::cout << " ";
+			}
+			std::cout << endl;
 
-
+			break;
+		}
 		if (Message.find("invitations.txt") != string::npos) {
 			system("cls");
 			//Sleep(1000);
@@ -68,6 +100,7 @@ bool Client::ProcessPacket(Packet _packettype)
 			{
 				std::cout<<endl;
 				std::cout << "You don't have any invitations." << std::endl;
+				
 				break;
 			}
 			else
@@ -89,6 +122,21 @@ bool Client::ProcessPacket(Packet _packettype)
 			}
 		}
 
+		if (Message.find("groupList") != string::npos) {
+			vector<string> tokens = split(Message, '.');
+			if (tokens.size() == 1) {
+				std::cout << "You are not part of any group " << std::endl;
+				break;
+			}
+			std::cout << "The groups are: " << std::endl;
+			for (int i = 1; i < tokens.size(); i++) {
+				std::cout << tokens[i];
+				std::cout << " ";
+			}
+			std::cout << endl;
+			break;
+		
+		}
 
 		if (Message.find("chatg") != string::npos) {
 			vector<string> tokens = split(Message, '.');
@@ -117,9 +165,39 @@ bool Client::ProcessPacket(Packet _packettype)
 				break;
 			}
 		}
+		if (Message.find("private") != string::npos) {
+			vector<string> tokens = split(Message, '.');
+			string groupName = tokens.at(1);
+			string source = tokens.at(2);
+			string UserNameDestination = tokens.at(3);
+			string message = tokens.at(4);
+			if (this->InChat == true)
+			{
+				std::cout << source << ":" << message << std::endl;
+				break;
+			}
+			else {
+				string path = "C:/Users/Maria/Documents/git/test/ServerM/Server/";
+				path.append(UserNameDestination);
+				path.append("/");
+				path.append(groupName);
+				path.append(".private.txt");
+				ofstream OutPut;
+				OutPut.open(path, std::ofstream::out | std::ofstream::app);
+				OutPut << source;
+				OutPut << ":";
+				OutPut << message;
+				OutPut << "\n";
+				OutPut.close();
+				break;
+			}
+		}
+
+
 		system("cls");
 		std::cout << Message << std::endl; //Display the message to the user
-		Sleep(1000);
+		_getch();
+		Sleep(3000);
 		break;
 	}
 	default: //If packet type is not accounted for
@@ -168,6 +246,7 @@ Client::Client(std::string IP, int PORT)
 	addr.sin_port = htons(PORT); //Port 
 	addr.sin_family = AF_INET; //IPv4 Socket
 	clientptr = this; //Update ptr to the client which will be used by our client thread
+	
 }
 
 

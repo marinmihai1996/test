@@ -27,19 +27,29 @@ public:
 	void LogIn(std::string message);
 	void ViewAccountsList();
 	void SaveAccount(Account*);
+
+
 	void RewriteAccountFile();
 	void RestoreMemory();
+
+
 	void SeeInvitations(std::string);
 	void MakeAdmin(std::string nume);
 	void DowngradeAdmin(std::string nume);
 	Account* getAccount(int ID);
 	int GetIdClient(std::string name);
 	void InviteClient(std::string);
+	void QuickAdd(std::string);
 	void AddMemberInGroup(std::string);
 
 	void GroupChat(std::string);
+	void PrivateChat(std::string);
 	void ConnectToGroup(std::string);
-	
+
+	void SeeMemberList(std::string);
+	void SeeAdminList(std::string);
+	void SeeGroupList(std::string);
+
 private:
 	void deleteGroup(std::string message);
 	void kickMember(std::string message);
