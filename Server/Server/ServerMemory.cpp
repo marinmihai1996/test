@@ -1,24 +1,8 @@
-#include<iostream>
 #include"ServerMemory.h"
-#include <fstream>
-#include<vector>
+#include"Utils.h"
 
 
-bool is_emptyy(std::ifstream& pFile)
-{
-	return pFile.peek() == std::ifstream::traits_type::eof();
-}
 
-static vector<string> split(const string &text, char sep) {
-	vector<string> tokens;
-	size_t start = 0, end = 0;
-	while ((end = text.find(sep, start)) != string::npos) {
-		tokens.push_back(text.substr(start, end - start));
-		start = end + 1;
-	}
-	tokens.push_back(text.substr(start));
-	return tokens;
-}
 
 
 Memory* Memory::mpInstance = NULL;
@@ -86,84 +70,13 @@ void Memory::AddInAccountList(Account*a){
 
 	AccountList.push_back(a);
 }
-void Memory::RestoreGroupAccountsList(Group*group)
-{
-	string path = "C:/Users/Maria/Documents/git/test/Server/Server/";
-	std::string groupName = group->GetGroupName();
-	path.append(groupName);
-	path.append(".txt");
-	ifstream InFile(path); // deschid fisierul grupului unde se afla membrii
-	string line;
-	if (InFile.good()) {
-		while (getline(InFile, line)) {
-			string username = line;;
-			Account *account = this->getAccount(username);
-			group->addAccount(account);
-		}
-	}
-}
+
 void Memory::AddInGroupList(Group*group){
 
 	GroupList.push_back(group); 
 	this->RestoreGroupAccountsList(group); // pentru fiecare grup, fac restore la account-urile membre
 }
-void Memory::RestoreAccountList() {
-	LogClass& Log = LogClass::GetInstance();
-	string line;
-	ifstream myfile("C:/Users/Maria/Documents/git/test/Server/Server/Accounts.txt");
-	if (myfile.good()){
-		while (getline(myfile, line)){  // same as: while (getline( myfile, line ).good())
-			
-			vector<string>tokens = split(line, ' ');
-			string username = tokens.at(0);
-			string password = tokens.at(1);
-			int ID = std::stoi(tokens.at(2));
-			Account *newAccount = new Account(username, password,ID);
-			this->AddInAccountList(newAccount);
-		}
-		myfile.close();
-	}
-	else cout << "Unable to open file";
-};
 
-void Memory::RestoreAdminList(Group*group){
-	string path = "C:/Users/Maria/Documents/git/test/Server/Server/";
-	string name = group->GetGroupName();
-	path.append(name);
-	path.append(".adminList.txt");
-	ifstream file(path);
-	if (is_emptyy(file) || !file) return;
-	ifstream filee;
-	filee.open(path);
-	string line;
-	while (std::getline(filee, line))
-	{
-		Account *a = this->getAccount(line);
-		
-		this->AddAdmin(group, a);
-	}
-	
-
-}
-void Memory::RestoreGroupsList() {
-	
-		LogGroups& Log = LogGroups::GetInstance();
-		string line;
-		ifstream myfile("C:/Users/Maria/Documents/git/test/Server/Server/Groups.txt");
-		if (myfile.good()) {
-			while (getline(myfile, line)) {  // same as: while (getline( myfile, line ).good())
-				vector<string>tokens = split(line, ' ');
-				string groupName = tokens.at(0);
-				string ownerName = tokens.at(1);
-				Group*group = new Group(groupName,ownerName);
-				this->AddInGroupList(group);
-				
-			}
-			myfile.close();
-		}
-		else cout << "This server doesn't have any groups yet!\n";
-
-};
 bool find(int a, int *v,int nr) {
 	for (int i = 0; i < nr; i++) {
 		if (v[i] == a) return true;

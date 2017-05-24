@@ -149,12 +149,18 @@
     <ClCompile Include="Account.cpp" />
     <ClCompile Include="Actions.cpp" />
     <ClCompile Include="Admin.cpp" />
+    <ClCompile Include="AdminOwnerFunc.cpp" />
+    <ClCompile Include="ChatFunctions.cpp" />
     <ClCompile Include="Group.cpp" />
+    <ClCompile Include="GroupFunctions.cpp" />
     <ClCompile Include="LogAccounts.cpp" />
     <ClCompile Include="LogGroups.cpp" />
+    <ClCompile Include="LogInAndSingUp.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Member.cpp" />
     <ClCompile Include="Owner.cpp" />
+    <ClCompile Include="ProcessPackets.cpp" />
+    <ClCompile Include="RestoreMemory.cpp" />
     <ClCompile Include="SendGetMethods.cpp" />
     <ClCompile Include="Server.cpp" />
     <ClCompile Include="ServerMemory.cpp" />
@@ -162,13 +168,19 @@
   <ItemGroup>
     <ClInclude Include="Account.h" />
     <ClInclude Include="Admin.h" />
+    <ClInclude Include="FileTransferData.h" />
     <ClInclude Include="Group.h" />
+    <ClInclude Include="IStatus.h" />
     <ClInclude Include="LogAccounts.h" />
     <ClInclude Include="LogGroups.h" />
     <ClInclude Include="Member.h" />
     <ClInclude Include="Owner.h" />
     <ClInclude Include="Server.h" />
     <ClInclude Include="ServerMemory.h" />
+    <ClInclude Include="Utils.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ClassDiagram.cd" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -10,16 +10,28 @@ Admin::Admin()
 Admin::~Admin()
 {
 }
-bool Admin::InviteClient()
-{
-	return true;
-}
-bool Admin::kickMember()
-{
-	return true;
-}
-bool Admin::MakeAdmin()
-{
-	this->SetStatut("admin");
+
+
+bool Admin::deleteGroup() {
 	return false;
+};
+
+bool Admin::kickMember() {
+	return true;
+};
+
+bool Admin::InviteClient() {
+	return true;
+};
+
+bool Admin::MakeAdmin() {
+	return true;
+};
+
+bool Admin::DowngradeAdmin() {
+	return false;
+};
+
+bool Admin::MakeOwner() {
+	return true;
 };

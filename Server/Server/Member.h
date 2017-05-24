@@ -1,21 +1,22 @@
 #ifndef _header_24442
 #define _header_24442
 #include<iostream>
-class Member
+#include"IStatus.h"
+class Member:public IStatus
 {
 protected:
 	std::string statut;
 
-public:
-    void SetStatut(std::string sir) { statut=sir; };
-	std::string getstatut() { return statut; };
+public:  
+	void SetStatut(std::string sir);
+    std::string getstatut();
 
-	virtual bool deleteGroup() { return false; };
-	virtual bool kickMember() { return false; };
-	virtual bool InviteClient() { return false; };
-	virtual bool MakeAdmin() { return false; };
-	virtual bool DowngradeAdmin() { return false; };
-	virtual bool MakeOwner() { return false; };
+	virtual bool deleteGroup();
+	virtual bool kickMember();
+	virtual bool InviteClient();
+	virtual bool MakeAdmin();
+	virtual bool DowngradeAdmin();
+	virtual bool MakeOwner();
 	bool OnlyMember();
 	Member();
 	virtual ~Member();

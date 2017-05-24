@@ -5,15 +5,15 @@
 #include<string>
 using namespace std;
 
-class LogClass
+class LogAccounts
 {
 private:
 	FILE *mpFILE;
-	LogClass(string filename);
-	static LogClass *mpInstance;
-	~LogClass();
+	LogAccounts(string filename);
+	static LogAccounts *mpInstance;
+	~LogAccounts();
 public:
-	static LogClass& GetInstance(); 
+	static LogAccounts& GetInstance(); 
 	void Write(string);
 	void write(char a) { fprintf(mpFILE,"%c",a); };
 	

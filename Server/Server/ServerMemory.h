@@ -54,7 +54,6 @@ public:
 
 
 	void GoOnline(int ID);
-	void GoOffine(int ID); // nu e implementata inca
 	void ChangeIdForSingUp(int ID);
 	void CleanAccountFile();
 	void ChangeIdForLogIn(int ID,string username);

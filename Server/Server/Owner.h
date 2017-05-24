@@ -6,12 +6,12 @@ class Member;
 class Owner :public Member
 {
 public:
-	bool deleteGroup();
-	bool MakeAdmin();
-	bool DowngradeAdmin();
-	bool kickMember();
-	bool InviteClient();
-	bool MakeOwner();
+	virtual bool deleteGroup();
+	virtual bool kickMember();
+	virtual bool InviteClient();
+	virtual bool MakeAdmin();
+	virtual bool DowngradeAdmin();
+	virtual bool MakeOwner();
 	Owner();
 	~Owner();
 };

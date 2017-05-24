@@ -2,13 +2,13 @@
 #include<iostream>
 #include"LogAccounts.h"
 
-LogClass* LogClass::mpInstance = NULL;
+LogAccounts* LogAccounts::mpInstance = NULL;
 
 ////////////////////////////////////////////
 ////////////////////////////////////////////
 
 
-LogClass::LogClass(string filename)
+LogAccounts::LogAccounts(string filename)
 {
 	mpFILE = fopen(filename.c_str(), "a+");
 }
@@ -18,12 +18,12 @@ LogClass::LogClass(string filename)
 ////////////////////////////////////////////
 
 
-LogClass&LogClass::GetInstance()
+LogAccounts&LogAccounts::GetInstance()
 {
 
 	if (mpInstance == NULL)
 	{
-		mpInstance = new LogClass("C:/Users/Maria/Documents/git/test/Server/Server/Accounts.txt");
+		mpInstance = new LogAccounts("C:/Users/Maria/Documents/git/test/Server/Server/Accounts.txt");
 	}
 	return *mpInstance;
 }
@@ -32,7 +32,7 @@ LogClass&LogClass::GetInstance()
 ////////////////////////////////////////////
 
 
-void LogClass::Write(string cuv)
+void LogAccounts::Write(string cuv)
 {
 	fprintf(mpFILE, "%s", cuv.c_str());
 	fflush(mpFILE);
@@ -42,7 +42,7 @@ void LogClass::Write(string cuv)
 ////////////////////////////////////////////
 
 
-LogClass::~LogClass()
+LogAccounts::~LogAccounts()
 {
 	fclose(mpFILE);
 }

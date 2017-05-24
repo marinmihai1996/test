@@ -64,7 +64,7 @@ et2:
 	{
 		string message = "seeinvitation.";
 		message.append(std::to_string(this->ID));
-		SendString(message);
+		SendString(message,true);
 		goto et2;
 		break;
 	}
@@ -88,7 +88,7 @@ et2:
 	case '4': {
 		string message = "seegrouplist.";
 		message.append(std::to_string(this->ID));
-		SendString(message);
+		SendString(message,true);
 		_getch();
 		goto et2;
 		break;
@@ -120,7 +120,9 @@ et3:
 	std::cout << "9. Downgrade an admin\n" << std::endl;
 	std::cout << "10. Delete the group(only for owner)\n" << std::endl;
 	std::cout << "11. Go to private chat with a member\n" << std::endl;
-	std::cout << "12. Go back\n" << std::endl;
+	std::cout << "12.Download a file from the group\n" << std::endl;
+	std::cout << "13.Upload a file to the group\n" << std::endl;
+	std::cout << "14. Go back\n" << std::endl;
 	
 	cin >> option;
 	switch (option) {
@@ -142,7 +144,7 @@ et3:
 		aux.append(username);
 		aux.append(".");
 		aux.append(groupName);
-		SendString(aux);
+		SendString(aux,true);
 		goto et3;
 		break;
 	}
@@ -162,7 +164,7 @@ et3:
 		message.append(groupName);
 		message.append(".");
 		message.append(username);
-		SendString(message);
+		SendString(message,true);
 		goto et3;
 		break;
 	}
@@ -200,11 +202,11 @@ et3:
 		message.append(".");
 		message.append(username);
 	
-		SendString(message);
+		SendString(message,true);
 		goto et3;
 		break;
 	}
-	case 12:{
+	case 14:{
 		system("cls"); 
 		this->ViewMenu2();
 		break;
@@ -236,7 +238,7 @@ et3:
 		message.append(username);
 		message.append(".");
 		message.append("kick");
-		SendString(message);
+		SendString(message,true);
 		goto et3;
 		break;
 
@@ -252,7 +254,7 @@ et3:
 			message.append(std::to_string(this->ID));
 			message.append(".");
 			message.append("leave");
-			SendString(message);
+			SendString(message,true);
 			system("cls");
 			this->ViewMenu2();
 			break;
@@ -284,7 +286,7 @@ et3:
 		   Message.append(groupName);
 		   Message.append(".");
 		   Message.append(username);
-		   SendString(Message);
+		   SendString(Message,true);
 		   goto et3;
 		   break;
 	}
@@ -309,7 +311,7 @@ et3:
 			message.append(std::to_string(this->ID));
 			message.append(".");
 			message.append(groupName);
-			SendString(message);
+			SendString(message,true);
 
 
 
@@ -322,6 +324,24 @@ et3:
 			break;
 		}
 
+	}
+	case 12: {
+		std::cout << "Insert the file name" << std::endl;
+		string filename;
+		cin >> filename;
+		this->RequestFile(filename,groupName);
+		_getch();
+		goto et3;
+		break;
+	}
+	case 13: {
+		std::cout << "Insert the file name" << std::endl;
+		string filename;
+		cin >> filename;
+		this->UpdateFile(filename, groupName);
+		_getch();
+		goto et3;
+		break;
 	}
 	default:
 	{

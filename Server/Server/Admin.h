@@ -10,9 +10,14 @@ class Admin : public Member
 protected: 
 
 public:
-	bool kickMember();
-	bool InviteClient();
-	bool MakeAdmin();
+	
+
+	virtual bool deleteGroup();
+	virtual bool kickMember();
+	virtual bool InviteClient();
+	virtual bool MakeAdmin();
+	virtual bool DowngradeAdmin();
+	virtual bool MakeOwner();
 	Admin();
 	~Admin();
 };

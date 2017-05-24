@@ -146,15 +146,20 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="ChatFunctions.cpp" />
     <ClCompile Include="Client.cpp" />
     <ClCompile Include="GroupMethods.cpp" />
     <ClCompile Include="LogInSingUpMethods.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Menus.cpp" />
+    <ClCompile Include="ProcessPackets.cpp" />
     <ClCompile Include="SendGetMethods.cpp" />
+    <ClCompile Include="TransferMethods.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h" />
+    <ClInclude Include="FileTransferData.h" />
+    <ClInclude Include="Utils.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -10,13 +10,24 @@
 #include"Account.h"
 #include"ServerMemory.h"
 #include "Member.h"
+#include"FileTransferData.h"
 using namespace std;
 class Account;
 enum Packet
 {
-	P_ChatMessage
+	P_ChatMessage,
+	P_FileTransferRequestFile, // when we request a file
+	P_FileTransfer_EndOfFile, // to the server to client when the file is completed
+	P_FileTransferByteBuffer, // to the server to client
+	P_FileTransferRequestNextBuffer,// to the client to the server--to get the next bytebuffer if it exists
+	P_FileTransferUpdateFile
 };
 
+
+struct Connection {
+	SOCKET socket;
+	FileTransferData file;
+};
 class Server
 {
 public:
@@ -57,8 +68,9 @@ private:
 	bool sendall(int ID, char * data, int totalbytes);
 	bool recvall(int ID, char * data, int totalbytes);
 
-	bool SendInt(int ID, int _int);
-	bool GetInt(int ID, int & _int);
+	
+	bool Sendint32_t(int ID, int32_t _int32_t);
+	bool Getint32_t(int ID, int32_t & _int32_t);
 
 	bool SendPacketType(int ID, Packet _packettype);
 	bool GetPacketType(int ID, Packet & _packettype);
@@ -67,12 +79,12 @@ private:
 	bool GetString(int ID, std::string & _string);
 
 	bool ProcessPacket(int ID, Packet _packettype);
-
+	bool HandleSendFile(int ID);
 	static void ClientHandlerThread(int ID);
 	 
 
 private:
-	SOCKET Connections[100];
+	Connection connections[100];
 	int IDs = 0;
 	//int IDs;
 	SOCKADDR_IN addr; //Address that we will bind our listening socket to

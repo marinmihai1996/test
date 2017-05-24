@@ -1,5 +1,9 @@
 #include "Server.h"
+#include"Utils.h"
 #define _SCL_SECURE_NO_WARNINGS
+
+
+
 Server::Server(int PORT, bool BroadcastPublically) //Port = port to broadcast on. BroadcastPublically = false if server is not open to the public (people outside of your router), true = server is open to everyone (assumes that the port is properly forwarded on router settings)
 {
 	//Winsock Startup
@@ -25,7 +29,7 @@ Server::Server(int PORT, bool BroadcastPublically) //Port = port to broadcast on
 		MessageBoxA(NULL, ErrorMsg.c_str(), "Error", MB_OK | MB_ICONERROR);
 		exit(1);
 	}
-	if (listen(sListen, SOMAXCONN) == SOCKET_ERROR) //Places sListen socket in a state in which it is listening for an incoming connection. Note:SOMAXCONN = Socket Oustanding Max Connections, if we fail to listen on listening socket...
+	if (listen(sListen, SOMAXCONN) == SOCKET_ERROR) //Places sListen socket in a state in which it is listening for an incoming connection. Note:SOMAXCONN = Socket Oustanding Max connections, if we fail to listen on listening socket...
 	{
 		std::string ErrorMsg = "Failed to listen on listening socket. Winsock Error:" + std::to_string(WSAGetLastError());
 		MessageBoxA(NULL, ErrorMsg.c_str(), "Error", MB_OK | MB_ICONERROR);
@@ -48,7 +52,7 @@ bool Server::ListenForNewConnection()
 	{
 		std::cout << "Client Connected!";
 
-		Connections[IDs] = newConnection; //Set socket in array to be the newest connection before creating the thread to handle this client's socket.
+		connections[IDs].socket = newConnection; //Set socket in array to be the newest connection before creating the thread to handle this client's socket.
 		CreateThread(NULL, NULL, (LPTHREAD_START_ROUTINE)ClientHandlerThread, (LPVOID)(IDs), NULL, NULL); //Create Thread to handle this client. The index in the socket array for this thread is the value (i).
 		std::string aux = "Connected";
 		std::string Id = "ID.";
@@ -62,115 +66,57 @@ bool Server::ListenForNewConnection()
 }
 
 
-bool Server::ProcessPacket(int ID, Packet _packettype)
+
+bool Server::HandleSendFile(int ID)
 {
-	switch (_packettype)
+
+	if (connections[ID].file.fileOffset >= connections[ID].file.fileSize) //If end of file reached then return true and skip sending any bytes
+		return true;
+	if (!SendPacketType(ID, P_FileTransferByteBuffer)) //Send packet type for file transfer byte buffer
+		return false;
+
+	connections[ID].file.remainingBytes = connections[ID].file.fileSize - connections[ID].file.fileOffset; //calculate remaining bytes
+	if (connections[ID].file.remainingBytes > connections[ID].file.buffersize) //if remaining bytes > max byte buffer
 	{
-	case P_ChatMessage: //Packet Type: chat message
+		connections[ID].file.infileStream.read(connections[ID].file.buffer, connections[ID].file.buffersize); //read in max buffer size bytes
+		if (!Sendint32_t(ID, connections[ID].file.buffersize)) //send int of buffer size
+			return false;
+		if (!sendall(ID, connections[ID].file.buffer, connections[ID].file.buffersize)) //send bytes for buffer
+			return false;
+		connections[ID].file.fileOffset += connections[ID].file.buffersize; //increment fileoffset by # of bytes written
+	}
+	else
 	{
-		std::string Message; //string to store our message we received
-		if (!GetString(ID, Message)) //Get the chat message and store it in variable: Message
-			return false; //If we do not properly get the chat message, return false
-						  //Next we need to send the message out to each user
-		
-		std::string CreateGroupMessage = "creategroup";
-		std::string singUp = "createAccount";
-    	std:string LogIn = "login";
-		std::string Invitation = "inviteclient";
-		std::string QuickAdd = "quickadd";
-		std::string ChatGroup = "chatg";
-		std::string PrivateChat = "private";
-		std::string AccesGroup = "access";
-		std::string deleteGroup = "deleteGroup";
-		std::string kickMember = "kick";
-		std::string JoinGroup = "joingroup";
-		std::string SeeInvitation = "seeinvitation";
-		std::string SeeMemberList = "seememberlist";
-		std::string SeeAdminList = "seeadminlist";
-		std::string SeeGroupList = "seegrouplist";
-		std::string Makeadmin = "makeadmin";
-		std::string Downgradeadmin = "downgrade";
-	
-
-
-		if (Message.find(Makeadmin)!=string::npos){
-			this->MakeAdmin(Message);
-		}
-		if (Message.find(Downgradeadmin) != string::npos) {
-			this->DowngradeAdmin(Message);
-		}
-		if (Message.find(CreateGroupMessage)!= string::npos){
-			CreateGroup(ID, Message);
-		}
-		if (Message.find(singUp) != string::npos) {
-			SingUp(Message);
-		}
-		if (Message.find(LogIn) != string::npos){
-			this->LogIn(Message);
-		}
-		if (Message.find(Invitation) != string::npos) {
-			this->InviteClient(Message);
-		}
-		if (Message.find(QuickAdd) != string::npos) {
-			this->QuickAdd(Message);
-		}
-		if (Message.find(ChatGroup) != string::npos) {
-			this->GroupChat(Message);
-		}
-		if (Message.find(PrivateChat) != string::npos) {
-			this->PrivateChat(Message);
-		}
-		if (Message.find(AccesGroup) != string::npos) {
-			this->ConnectToGroup(Message);
-		}
-		if (Message.find(deleteGroup) != string::npos) {
-			this->deleteGroup(Message);
-			
-		}
-		if (Message.find(kickMember) != string::npos) {
-			this->kickMember(Message);
-		}
-
-		if (Message.find(SeeInvitation) != string::npos) {
-			this->SeeInvitations(Message);
-		}
-		if (Message.find(JoinGroup) != string::npos) { //nefolosita inca
-			this->AddMemberInGroup(Message);
-		}
-		if (Message.find(SeeMemberList) != string::npos) {
-			this->SeeMemberList(Message);
-		}
-		if (Message.find(SeeAdminList) != string::npos) {
-			this->SeeAdminList(Message);
-		}
-		if (Message.find(SeeGroupList) != string::npos) {
-			this->SeeGroupList(Message);
-		}
-
-		std::cout << "Processed chat message packet from user  " << ID << std::endl;
-		break;
+		connections[ID].file.infileStream.read(connections[ID].file.buffer, connections[ID].file.remainingBytes); //read in remaining bytes
+		if (!Sendint32_t(ID, connections[ID].file.remainingBytes)) //send int of buffer size
+			return false;
+		if (!sendall(ID, connections[ID].file.buffer, connections[ID].file.remainingBytes)) //send bytes for buffer
+			return false;
+		connections[ID].file.fileOffset += connections[ID].file.remainingBytes; //increment fileoffset by # of bytes written
 	}
 
-	default: //If packet type is not accounted for
+	if (connections[ID].file.fileOffset == connections[ID].file.fileSize) //If we are at end of file
 	{
-		std::cout << "Unrecognized packet: " << _packettype << std::endl; //Display that packet was not found
-		break;
+		connections[ID].file.infileStream.close();
+		if (!SendPacketType(ID, P_FileTransfer_EndOfFile)) //Send end of file packet
+			return false;
+		//Print out data on server details about file that was sent
+		std::cout << std::endl << "File sent: " << connections[ID].file.fileName << std::endl;
+		std::cout << "File size(bytes): " << connections[ID].file.fileSize << std::endl << std::endl;
 	}
-	}  
 	return true;
 }
-
-void Server::ClientHandlerThread(int ID) //ID = the index in the SOCKET Connections array
+void Server::ClientHandlerThread(int ID) //ID = the index in the SOCKET connections array
 {
 	Packet PacketType;
 	while (true)
 	{
 		if (!serverptr->GetPacketType(ID, PacketType)) //Get packet type
 			break; //If there is an issue getting the packet type, exit this loop
-if (!serverptr->ProcessPacket(ID, PacketType)) //Process packet (packet type)
+        if (!serverptr->ProcessPacket(ID, PacketType)) //Process packet (packet type)
 			break; //If there is an issue processing the packet, exit this loop
 	}
 	std::cout << "Lost connection to client ID: " << ID << std::endl;
-	closesocket(serverptr->Connections[ID]);
+	closesocket(serverptr->connections[ID].socket);
 }
 
