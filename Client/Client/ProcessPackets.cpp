@@ -12,10 +12,7 @@ bool Client::ProcessPacket(Packet _packettype)
 		std::string Message;
 		if (!GetString(Message))
 			return false;
-		if (Message.find("Connected") != string::npos) {
-
-			break;
-		}
+		
 		if (Message.find("ID") != string::npos) {
 			vector<string> tokens = split(Message, '.');
 			this->ID = stoi(tokens.at(1));
@@ -130,7 +127,11 @@ bool Client::ProcessPacket(Packet _packettype)
 			break;
 
 		}
-
+		/*if (Message.find("path") != string::npos) {
+			vector<string> tokens = split(Message, '.');
+			this->FolderPath = tokens.at(1);
+			break;
+		}*/
 		if (Message.find("chatg") != string::npos) {
 			vector<string> tokens = split(Message, '.');
 			string groupName = tokens.at(1);
@@ -143,22 +144,15 @@ bool Client::ProcessPacket(Packet _packettype)
 				break;
 			}
 			else {
-				string path = "C:/Users/Maria/Documents/git/test/Server/Server/";
-				path.append(UserNameDestination);
-				path.append("/");
-				path.append(groupName);
-				path.append(".txt");
-				ofstream OutPut;
-				OutPut.open(path, std::ofstream::out | std::ofstream::app);
-				OutPut << source;
-				OutPut << ":";
-				OutPut << message;
-				OutPut << "\n";
-				OutPut.close();
-				break;
+				//chatg.groupName.source.destination.message.offlineG
+				Message.append(".");
+				Message.append("offlinegG");
+				SendString(Message, true);
+				
 			}
 		}
 		if (Message.find("private") != string::npos) {
+			//private.groupname.source.destination.message
 			vector<string> tokens = split(Message, '.');
 			string groupName = tokens.at(1);
 			string source = tokens.at(2);
@@ -170,20 +164,25 @@ bool Client::ProcessPacket(Packet _packettype)
 				break;
 			}
 			else {
-				string path = "C:/Users/Maria/Documents/git/test/Server/Server/";
-				path.append(UserNameDestination);
-				path.append("/");
-				path.append(groupName);
-				path.append(".private.txt");
-				ofstream OutPut;
-				OutPut.open(path, std::ofstream::out | std::ofstream::app);
-				OutPut << source;
-				OutPut << ":";
-				OutPut << message;
-				OutPut << "\n";
-				OutPut.close();
+				Message.append(".");
+				Message.append("offlineP");
+				//chatg.groupName.source.destination.message.offlineP
+				SendString(Message, true);
+			
 				break;
 			}
+		}
+		if (Message.find("restoreMesG.") != string::npos) {
+			vector<string> tokens = split(Message, '.');
+			string message = tokens.at(1);
+			cout << message << endl;
+			break;
+		}
+		if (Message.find("restoreMesP.") != string::npos) {
+			vector<string> tokens = split(Message, '.');
+			string message = tokens.at(1);
+			cout << message << endl;
+			break;
 		}
 
 

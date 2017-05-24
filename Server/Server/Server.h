@@ -36,10 +36,11 @@ public:
 	void CreateGroup(int ID, std::string name);
 	void SingUp(std::string message);
 	void LogIn(std::string message);
-	void ViewAccountsList();
+	//void ViewAccountsList();
 	void SaveAccount(Account*);
 
-
+	void GroupWriteInFile(std::string);
+	void PrivateWriteInFile(std::string);
 	void RewriteAccountFile();
 	void RestoreMemory();
 
@@ -60,6 +61,9 @@ public:
 	void SeeMemberList(std::string);
 	void SeeAdminList(std::string);
 	void SeeGroupList(std::string);
+
+	void RestoreGroupOfflineMessages(std::string);
+	void RestorePrivateOfflineMessages(std::string);
 
 private:
 	void deleteGroup(std::string message);

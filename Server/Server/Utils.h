@@ -14,7 +14,8 @@ static bool is_emptyy(std::ifstream& pFile)
 }
 static void CreateDirectory(string name)
 {
-	string path = "C:/Users/Maria/Documents/git/test/Server/Server/";
+	string path = ".\\";
+	//string path = "C:/Users/Maria/Documents/git/test/Server/Server/";
 	path.append(name);
 	_mkdir(path.c_str());
 }

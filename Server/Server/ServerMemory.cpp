@@ -122,7 +122,7 @@ void Memory::ChangeIdForLogIn(int ID,string username) {
 void Memory::CleanAccountFile()
 {
 	fstream ofs;
-	ofs.open("C:/Users/Maria/Documents/git/test/Server/Server/Accounts.txt", ios::out | ios::trunc);
+	ofs.open(".\\Accounts.txt", ios::out | ios::trunc);
 	ofs.flush();
 	ofs.close();
 	

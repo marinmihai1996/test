@@ -90,54 +90,26 @@ void Client::ChatGroup(std::string groupName)
 }
 
 void Client::RestoreOfflineMessages(std::string groupName, std::string Case, std::string Username) {
-	std::string path;
-	path = this->FolderPath;
-	//path.append("/");
-	path.append(groupName);
-	if (Case == "grup") {
 
-		path.append(".txt");
-		std::ifstream file(path);
-		if (is_emptyy(file) || !file) return;
-		else {
-			std::ifstream filee;
-			filee.open(path);
-			std::string line;
-
-			while (std::getline(filee, line))
-			{
-				std::cout << line << std::endl;
-			}
-			filee.close();
-			std::ofstream ofs;
-			ofs.open(path, std::ofstream::out | std::ofstream::trunc);
-			ofs.close();
-			return;
-		}
+	//restoreMesG.username.groupname
+	if (Case == "grup")
+	{
+		std::string Message = "restoreMesG.";
+		Message.append(this->currentUserName);
+		Message.append(".");
+		Message.append(groupName);
+		SendString(Message);
+		
 	}
-	if (Case == "private") {
-
-
-		path.append(".private");
-		string pathh = path;
-		path.append(".txt");
-		std::ifstream file(path);
-		if (is_emptyy(file) || !file) return;
-		else {
-			std::ifstream filee;
-			filee.open(path);
-			std::string line;
-
-			while (std::getline(filee, line))
-			{
-				if (line.find(Username) != string::npos)
-				{
-					std::cout << line << std::endl;
-					deleteFromFile(line, pathh);
-				}
-			}
-			filee.close();
-		}
-
+	else { //case==privat
+		   //restoreMesP.username.groupname.username
+		std::string Message = "restoreMesP.";
+		Message.append(this->currentUserName);
+		Message.append(".");
+		Message.append(groupName);
+		Message.append(".");
+		Message.append(Username);
+		SendString(Message);
 	}
 }
+	

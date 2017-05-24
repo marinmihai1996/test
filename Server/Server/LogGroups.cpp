@@ -23,7 +23,7 @@ LogGroups&LogGroups::GetInstance()
 
 	if (mpInstance == NULL)
 	{
-		mpInstance = new LogGroups("C:/Users/Maria/Documents/git/test/Server/Server/Groups.txt");
+		mpInstance = new LogGroups(".\\Groups.txt");
 	}
 	return *mpInstance;
 }

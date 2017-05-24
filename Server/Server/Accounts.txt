@@ -1,3 +1,4 @@
 maria qaz 0
-cristi qaz 5
-dia qaz 7
+casi qaz 1
+mihai qaz 2
+cas cs -858993460

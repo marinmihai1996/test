@@ -3,8 +3,9 @@
 #include<iostream>
 #include<fstream>
 #include<direct.h>
-using namespace std;
 #include<vector>
+using namespace std;
+
 
 
 void Client::ClientThread()
@@ -40,7 +41,7 @@ Client::Client(std::string IP, int PORT)
 		exit(0);
 	}
 
-	addr.sin_addr.s_addr = inet_addr(IP.c_str()); //Address (127.0.0.1) = localhost (this pc)
+	addr.sin_addr.s_addr = inet_addr(IP.c_str()); //localhost
 	addr.sin_port = htons(PORT); //Port 
 	addr.sin_family = AF_INET; //IPv4 Socket
 	clientptr = this; //Update ptr to the client which will be used by our client thread
@@ -56,8 +57,7 @@ bool Client::Connect()
 		MessageBoxA(NULL, "The server is not started", "Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
-
-	std::cout << "Connected!" << std::endl;
+  
 	CreateThread(NULL, NULL, (LPTHREAD_START_ROUTINE)ClientThread, NULL, NULL, NULL); //Create the client thread that will receive any data that the server sends.
 	return true;
 }

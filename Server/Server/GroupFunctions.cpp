@@ -59,7 +59,8 @@ void Server::InviteClient(string message)
 		SendString(ID, errorMessage);
 		return;
 	}
-	string path = "C:/Users/Maria/Documents/git/test/Server/Server/";
+	//string path = "C:/Users/Maria/Documents/git/test/Server/Server/";
+	string path = ".\\";
 	path.append(clientName.c_str());
 	path.append("/");
 	path.append("invitations.txt");
@@ -106,7 +107,8 @@ void Server::QuickAdd(string message) {
 		return;
 	}
 	group->addAccount(account);
-	string path = "C:/Users/Maria/Documents/git/test/Server/Server/";
+	string path = ".\\";
+	//string path = "C:/Users/Maria/Documents/git/test/Server/Server/";
 	path.append(groupName);
 	path.append(".txt");
 	std::ofstream ofs;
@@ -149,7 +151,8 @@ void Server::SeeInvitations(string message)
 	Memory&mem = Memory::GetInstance();
 	Account*acc = mem.getAccount(UserId);
 	string username = acc->GetUsername();
-	string path = "C:/Users/Maria/Documents/git/test/Server/Server/";
+	//string path = ".\\";
+    string path = "C:/Users/Maria/Documents/git/test/Server/Server/";
 	path.append(username);
 	path.append("/invitations.txt");
 	SendString(UserId, path);
@@ -170,7 +173,8 @@ void Server::ConnectToGroup(std::string Message) {
 	}
 	mem.RestoreAdminList(group);
 	std::ifstream file;
-	string path = "C:/Users/Maria/Documents/git/test/Server/Server/";
+	//string path = "C:/Users/Maria/Documents/git/test/Server/Server/";
+	string path = ".\\";
 	path.append(groupName);
 	path.append(".txt");
 
@@ -180,7 +184,8 @@ void Server::ConnectToGroup(std::string Message) {
 	vector<string> tokenss = split(FirstLine, '.');
 	string OwnerName = tokenss.at(0);
 	// aici o sa verific si cu vectorul de admini
-	string AdminPath = "C:/Users/Maria/Documents/git/test/Server/Server/";
+//	string AdminPath = "C:/Users/Maria/Documents/git/test/Server/Server/";
+	string AdminPath = ".\\";
 	AdminPath.append(groupName);
 	AdminPath.append(".adminList.txt");
 	ifstream File(AdminPath);
@@ -230,6 +235,134 @@ void Server::ConnectToGroup(std::string Message) {
 	else {
 		string message = "This group do not exists!";
 		SendString(userID, message);
+	}
+
+}
+
+void Server::GroupWriteInFile(std::string Message)
+{
+	//chatg.groupName.source.destination.message.offlineG
+	string path = ".\\";
+	vector<string> tokens = split(Message, '.');
+	string groupName = tokens.at(1);
+	string source = tokens.at(2);
+	string destination = tokens.at(3);
+	string message = tokens.at(4);
+	path.append(destination);
+	path.append("\\");
+	path.append(groupName);
+	path.append(".txt");
+
+	ofstream OutPut;
+	OutPut.open(path, std::ofstream::out | std::ofstream::app);
+	OutPut << source;
+	OutPut << ":";
+	OutPut << message;
+	OutPut << "\n";
+	OutPut.close();
+	
+
+}
+
+void Server::PrivateWriteInFile(std::string Message)
+{
+	//chatg.groupName.source.destination.message.offlineP
+
+	string path = ".\\";
+	vector<string> tokens = split(Message, '.');
+	string groupName = tokens.at(1);
+	string source = tokens.at(2);
+	string destination = tokens.at(3);
+	string message = tokens.at(4);
+	path.append(destination);
+	path.append("\\");
+	path.append(groupName);
+	path.append(".");
+	path.append("private.txt");
+
+	ofstream OutPut;
+	OutPut.open(path, std::ofstream::out | std::ofstream::app);
+	OutPut << source;
+	OutPut << ":";
+	OutPut << message;
+	OutPut << "\n";
+	OutPut.close();
+
+
+
+}
+
+void Server::RestoreGroupOfflineMessages(std::string Message)
+{
+	//restoreMesG.username.groupname
+	string path = ".\\";
+	vector<string> tokens = split(Message, '.');
+	string username = tokens.at(1);
+	string groupname = tokens.at(2);
+	Memory& mem = Memory::GetInstance();
+	Account*account = mem.getAccount(username);
+	path.append(username);
+	path.append("/");
+	path.append(groupname);
+	path.append(".txt");
+	std::ifstream file(path);
+	if (is_emptyy(file) || !file) return;
+	else {
+		std::ifstream filee;
+		filee.open(path);
+		std::string line;
+
+		while (std::getline(filee, line))
+		{
+			string Message = "restoreMesG.";
+			Message.append(line);
+			SendString(account->GetId(), Message);
+			//std::cout << line << std::endl;
+		}
+		filee.close();
+		std::ofstream ofs;
+		ofs.open(path, std::ofstream::out | std::ofstream::trunc);
+		ofs.close();
+		return;
+	}
+
+}
+void Server::RestorePrivateOfflineMessages(std::string Message)
+{
+	//restoreMesP.username.groupname.username
+	string path = ".\\";
+	vector<string> tokens = split(Message, '.');
+	string username = tokens.at(1);
+	string groupname = tokens.at(2);
+	string Username = tokens.at(3);
+	Memory& mem = Memory::GetInstance();
+	Account*account = mem.getAccount(username);
+	path.append(username);
+	path.append("/");
+	path.append(groupname);
+	path.append(".");
+	path.append("private");
+	string pathh = path;
+	path.append(".txt");
+	std::ifstream file(path);
+	if (is_emptyy(file) || !file) return;
+	else {
+		std::ifstream filee;
+		filee.open(path);
+		std::string line;
+
+		while (std::getline(filee, line))
+		{
+			if (line.find(Username) != string::npos)
+			{
+				string message = "restoreMesP.";
+				message.append(line);
+				
+				SendString(account->GetId(), message);
+				deleteFromFile(line, pathh);
+			}
+		}
+		filee.close();
 	}
 
 }

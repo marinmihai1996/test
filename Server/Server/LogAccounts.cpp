@@ -23,7 +23,7 @@ LogAccounts&LogAccounts::GetInstance()
 
 	if (mpInstance == NULL)
 	{
-		mpInstance = new LogAccounts("C:/Users/Maria/Documents/git/test/Server/Server/Accounts.txt");
+		mpInstance = new LogAccounts(".\\Accounts.txt");
 	}
 	return *mpInstance;
 }

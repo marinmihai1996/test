@@ -7,7 +7,7 @@ string NotShowingPass(string &pass)
 	pass = "";
 	char ch;
 	ch = _getch();
-	while (ch != 13) {//character 13 is enter
+	while (ch != 13) {
 		pass.push_back(ch);
 		cout << '*';
 		ch = _getch();
@@ -21,10 +21,6 @@ void Client::LogIn()
 	std::cout << "Username" << std::endl;
 	string usename;
 	cin >> usename;
-	string path = "C:/Users/Maria/Documents/git/test/Server/Server/";
-	path.append(usename);
-	path.append("/");
-	this->FolderPath = path;
 	std::cout << "Password" << std::endl;
 	string pass;
 	NotShowingPass(pass);
@@ -77,12 +73,10 @@ void Client::SingUp()
 	aux.append(username);
 
 
-	string path = "C:/Users/Maria/Documents/git/test/Server/Server/";
+	/*string path = "C:/Users/Maria/Documents/git/test/Server/Server/";
 	path.append(username);
-	path.append("/");
-	this->FolderPath = path;
-
-
+	path.append("/");*/
+	
 	aux.append(".");
 	pass.append(".");
     pass.append(std::to_string(this->ID)); 

@@ -29,7 +29,22 @@ bool Server::ProcessPacket(int ID, Packet _packettype)
 		std::string Makeadmin = "makeadmin";
 		std::string Downgradeadmin = "downgrade";
 		std::string ExistFile = "FileExists ";
+		std::string RestoreMessageG = "restoreMesG";
+		std::string RestoreMessageP = "restoreMesP";
 
+		if (Message.find("offlineG")!=string::npos) {
+			this->GroupWriteInFile(Message);
+		}
+
+		if (Message.find("offlineP") != string::npos) {
+			this->PrivateWriteInFile(Message);
+		}
+		if (Message.find("restoreMesG") != string::npos) {
+			this->RestoreGroupOfflineMessages(Message);
+		}
+		if (Message.find("restoreMesP") != string::npos) {
+			this->RestorePrivateOfflineMessages(Message);
+		}
 
 		if (Message.find(Makeadmin) != string::npos) {
 			this->MakeAdmin(Message);
@@ -84,13 +99,7 @@ bool Server::ProcessPacket(int ID, Packet _packettype)
 		if (Message.find(SeeGroupList) != string::npos) {
 			this->SeeGroupList(Message);
 		}
-		if (Message.find(ExistFile) != string::npos) {
-			vector<string> tokens = split(Message, ' ');
-			int ID = stoi(tokens.at(1));
-			string groupName = tokens.at(2);
-			string message = "confirmation";
-			SendString(ID, message);
-		}
+		
 
 		std::cout << "Processed chat message packet from user  " << ID << std::endl;
 		break;
@@ -115,7 +124,7 @@ bool Server::ProcessPacket(int ID, Packet _packettype)
 			std::string ErrMsg = "Requested file: " + FileName + " does not exist or was not found.";
 			if (!SendString(ID, ErrMsg)) //Send error msg string to client
 				return false;
-			remove(path.c_str());
+			//remove(path.c_str());
 			return true;
 		}
 		connections[ID].file.infileStream.open(path, std::ios::binary | std::ios::ate); //Open file to read in binary | ate mode. We use ate so we can use tellg to get file size. We use binary because we need to read bytes as raw data

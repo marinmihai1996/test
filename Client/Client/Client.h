@@ -54,7 +54,7 @@ private: //Private functions
 	statut Statut;
 	void setStatus(statut a) { Statut = a; }
 	statut getStatut() { return Statut; }
-	std::string FolderPath;
+	//std::string FolderPath;
 	bool ProcessPacket(Packet _packettype);
 	static void ClientThread();
 

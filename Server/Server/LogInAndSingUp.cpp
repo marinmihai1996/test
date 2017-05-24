@@ -70,8 +70,13 @@ void Server::LogIn(std::string message) {
 		SendString(ID, IdMessage);
 		string message = "You are now online!\n";
 		mem.GoOnline(ID);
-		this->SendString(ID, message);
-
+		this->SendString(ID, message); 
+		/*string folderPath = "path.";
+		string path = "C:/Users/Maria/Documents/git/test/Server/Server/";
+		folderPath.append(path);
+		folderPath.append(username);
+		path.append("/");
+		SendString(ID, folderPath);*/
 	}
 	else {
 		//nu e in memorie

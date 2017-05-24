@@ -34,6 +34,7 @@ void Server::PrivateChat(string Message) {
 	mes.append(message);
 	if (!SendString(UserDestinaton->GetId(), mes)) //Send message to connection at index i, if message fails to be sent...
 	{
+
 		string path = "C:/Users/Maria/Documents/git/test/Server/Server/";
 		path.append(UserDestinaton->GetUsername());
 		path.append("/");
